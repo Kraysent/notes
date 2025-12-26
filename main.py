@@ -1,13 +1,14 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from pydantic_settings import BaseSettings
-from datetime import datetime
 from pathlib import Path
 import click
 import logging
 import uvicorn
-from database import get_db_connection, run_migrations
+
+from backend.database import run_migrations
+from backend.models import NoteResponse, NoteUpdate, TitleUpdate
+from backend.handlers.notes import save_note, update_title
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -29,90 +30,14 @@ app.add_middleware(
 )
 
 
-class NoteResponse(BaseModel):
-    id: int
-    title: str
-    content: str
-    created_at: str
-    updated_at: str
-
-
-class NoteUpdate(BaseModel):
-    title: str
-    content: str | None = None
-
-
-class TitleUpdate(BaseModel):
-    new_title: str
-    old_title: str
-
-
 @app.put("/api/note", response_model=NoteResponse)
-def save_note(note_update: NoteUpdate):
-    conn = get_db_connection(settings.database_path)
-    cursor = conn.cursor()
-    
-    now = datetime.now().isoformat()
-    content = note_update.content if note_update.content is not None else ""
-    
-    if note_update.content is not None:
-        cursor.execute(
-            """INSERT INTO notes (title, content, created_at, updated_at)
-               VALUES (?, ?, ?, ?)
-               ON CONFLICT(title) DO UPDATE SET
-               content = excluded.content,
-               updated_at = ?""",
-            (note_update.title, content, now, now, now)
-        )
-    else:
-        cursor.execute(
-            """INSERT INTO notes (title, content, created_at, updated_at)
-               VALUES (?, ?, ?, ?)
-               ON CONFLICT(title) DO UPDATE SET
-               updated_at = ?""",
-            (note_update.title, content, now, now, now)
-        )
-    
-    conn.commit()
-    cursor.execute("SELECT * FROM notes WHERE title = ?", (note_update.title,))
-    saved_note = cursor.fetchone()
-    conn.close()
-    
-    return {
-        "id": saved_note["id"],
-        "title": saved_note["title"],
-        "content": saved_note["content"],
-        "created_at": saved_note["created_at"],
-        "updated_at": saved_note["updated_at"],
-    }
+def save_note_endpoint(note_update: NoteUpdate):
+    return save_note(note_update, settings.database_path)
 
 
 @app.patch("/api/note/title", response_model=NoteResponse)
-def update_title(title_update: TitleUpdate):
-    conn = get_db_connection(settings.database_path)
-    cursor = conn.cursor()
-    
-    cursor.execute(
-        "UPDATE notes SET title = ?, updated_at = ? WHERE title = ?",
-        (title_update.new_title, datetime.now().isoformat(), title_update.old_title)
-    )
-    
-    if cursor.rowcount == 0:
-        conn.close()
-        raise HTTPException(status_code=400, detail=f"No note found with title '{title_update.old_title}'")
-    
-    conn.commit()
-    cursor.execute("SELECT * FROM notes WHERE title = ?", (title_update.new_title,))
-    updated_note = cursor.fetchone()
-    conn.close()
-    
-    return {
-        "id": updated_note["id"],
-        "title": updated_note["title"],
-        "content": updated_note["content"],
-        "created_at": updated_note["created_at"],
-        "updated_at": updated_note["updated_at"],
-    }
+def update_title_endpoint(title_update: TitleUpdate):
+    return update_title(title_update, settings.database_path)
 
 
 @click.command()
