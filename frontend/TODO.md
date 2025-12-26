@@ -1,7 +1,6 @@
 - Ability to name notes
 - Ability to store notes:
   - sqlite DB + migrations
-  - "save" button
   - "open" button
   - sidebar with all notes
 - Ability to tag notes
