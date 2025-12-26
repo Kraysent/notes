@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import Editor from '@monaco-editor/react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { MdOutlineAutorenew, MdCheck, MdClear } from 'react-icons/md'
 import { ViewMode, SaveStatus } from '../types'
 import { saveNote } from '../api'
 
@@ -62,14 +63,23 @@ interface NoteEditorProps {
   note: string
   onNoteChange: (note: string) => void
   viewMode: ViewMode
+  title: string
 }
 
-function NoteEditor({ note, onNoteChange, viewMode }: NoteEditorProps) {
+function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSavedContentRef = useRef<string>(note)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>(SaveStatus.Saved)
 
   useEffect(() => {
+    if (!title || !title.trim()) {
+      setSaveStatus(SaveStatus.Unsaved)
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+      return
+    }
+
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current)
     }
@@ -87,7 +97,7 @@ function NoteEditor({ note, onNoteChange, viewMode }: NoteEditorProps) {
       }
 
       setSaveStatus(SaveStatus.Saving)
-      saveNote(note)
+      saveNote(title, note)
         .then(() => {
           lastSavedContentRef.current = note
           setSaveStatus(SaveStatus.Saved)
@@ -103,12 +113,12 @@ function NoteEditor({ note, onNoteChange, viewMode }: NoteEditorProps) {
         clearTimeout(saveTimeoutRef.current)
       }
     }
-  }, [note])
+  }, [note, title])
 
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (lastSavedContentRef.current !== note) {
-        saveNote(note).catch((error) => {
+      if (title && title.trim() && lastSavedContentRef.current !== note) {
+        saveNote(title, note).catch((error) => {
           console.error('Failed to save note on page unload:', error)
         })
       }
@@ -121,42 +131,29 @@ function NoteEditor({ note, onNoteChange, viewMode }: NoteEditorProps) {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current)
       }
-      if (lastSavedContentRef.current !== note) {
-        saveNote(note).catch((error) => {
+      if (title && title.trim() && lastSavedContentRef.current !== note) {
+        saveNote(title, note).catch((error) => {
           console.error('Failed to save note on unmount:', error)
         })
       }
     }
-  }, [note])
+  }, [note, title])
 
-  const getStatusText = () => {
+  const getStatusIcon = () => {
     switch (saveStatus) {
       case SaveStatus.Saved:
-        return 'Saved'
+        return <MdCheck />
       case SaveStatus.Saving:
-        return 'Saving...'
+        return <MdOutlineAutorenew />
       case SaveStatus.Unsaved:
-        return 'Unsaved'
-    }
-  }
-
-  const getStatusColor = () => {
-    switch (saveStatus) {
-      case SaveStatus.Saved:
-        return 'text-green-600 dark:text-green-400'
-      case SaveStatus.Saving:
-        return 'text-yellow-600 dark:text-yellow-400'
-      case SaveStatus.Unsaved:
-        return 'text-gray-500 dark:text-gray-400'
+        return <MdClear />
     }
   }
 
   return (
     <div className="flex-1 overflow-hidden relative">
-      <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-md bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-gray-700 shadow-sm">
-        <span className={`text-sm font-medium ${getStatusColor()}`}>
-          {getStatusText()}
-        </span>
+      <div className="absolute top-4 right-4 z-10">
+        {getStatusIcon()}
       </div>
       {viewMode === ViewMode.Raw ? (
         <RawEditor note={note} onNoteChange={onNoteChange} />

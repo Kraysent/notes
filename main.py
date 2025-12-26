@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
@@ -31,6 +31,7 @@ app.add_middleware(
 
 class NoteResponse(BaseModel):
     id: int
+    title: str
     content: str
     created_at: str
     updated_at: str
@@ -40,14 +41,23 @@ class NoteUpdate(BaseModel):
     content: str
 
 
-@app.put("/api/note", response_model=NoteResponse)
-def save_note(note_update: NoteUpdate):
+class NoteCreate(BaseModel):
+    title: str
+
+
+class TitleUpdate(BaseModel):
+    new_title: str
+    old_title: str
+
+
+@app.post("/api/note", response_model=NoteResponse)
+def create_note(note_create: NoteCreate):
     conn = get_db_connection(settings.database_path)
     cursor = conn.cursor()
     
     cursor.execute(
-        "INSERT INTO notes (content, created_at, updated_at) VALUES (?, ?, ?)",
-        (note_update.content, datetime.now().isoformat(), datetime.now().isoformat())
+        "INSERT INTO notes (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)",
+        (note_create.title, "", datetime.now().isoformat(), datetime.now().isoformat())
     )
     note_id = cursor.lastrowid
     
@@ -58,9 +68,70 @@ def save_note(note_update: NoteUpdate):
     
     return {
         "id": saved_note["id"],
+        "title": saved_note["title"],
         "content": saved_note["content"],
         "created_at": saved_note["created_at"],
         "updated_at": saved_note["updated_at"],
+    }
+
+
+@app.put("/api/note", response_model=NoteResponse)
+def save_note(note_update: NoteUpdate, title: str):
+    conn = get_db_connection(settings.database_path)
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT id FROM notes WHERE title = ?", (title,))
+    existing_note = cursor.fetchone()
+    
+    if not existing_note:
+        conn.close()
+        raise HTTPException(status_code=400, detail=f"No note found with title '{title}'")
+    
+    note_id = existing_note["id"]
+    cursor.execute(
+        "UPDATE notes SET content = ?, updated_at = ? WHERE id = ?",
+        (note_update.content, datetime.now().isoformat(), note_id)
+    )
+    
+    conn.commit()
+    cursor.execute("SELECT * FROM notes WHERE id = ?", (note_id,))
+    saved_note = cursor.fetchone()
+    conn.close()
+    
+    return {
+        "id": saved_note["id"],
+        "title": saved_note["title"],
+        "content": saved_note["content"],
+        "created_at": saved_note["created_at"],
+        "updated_at": saved_note["updated_at"],
+    }
+
+
+@app.patch("/api/note/title", response_model=NoteResponse)
+def update_title(title_update: TitleUpdate):
+    conn = get_db_connection(settings.database_path)
+    cursor = conn.cursor()
+    
+    cursor.execute(
+        "UPDATE notes SET title = ?, updated_at = ? WHERE title = ?",
+        (title_update.new_title, datetime.now().isoformat(), title_update.old_title)
+    )
+    
+    if cursor.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=400, detail=f"No note found with title '{title_update.old_title}'")
+    
+    conn.commit()
+    cursor.execute("SELECT * FROM notes WHERE title = ?", (title_update.new_title,))
+    updated_note = cursor.fetchone()
+    conn.close()
+    
+    return {
+        "id": updated_note["id"],
+        "title": updated_note["title"],
+        "content": updated_note["content"],
+        "created_at": updated_note["created_at"],
+        "updated_at": updated_note["updated_at"],
     }
 
 
