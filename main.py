@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic_settings import BaseSettings
 from pathlib import Path
 import click
@@ -12,25 +14,28 @@ from backend.handlers.notes import save_note, update_title, get_note_by_title, l
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
+DB_NAME = "notes.db"
+
 
 class Settings(BaseSettings):
-    database_path: Path = Path("data/notes.db")
+    path_prefix: Path = Path("data")
+    
+    @property
+    def database_path(self) -> Path:
+        return self.path_prefix / DB_NAME
 
 
 settings = Settings()
 
 app = FastAPI()
 
-
-def configure_cors(origins: list[str]) -> None:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/api/note", response_model=NoteResponse)
 def get_note_endpoint(title: str):
@@ -55,22 +60,14 @@ def list_notes_endpoint(page: int = 1, page_size: int = 50):
 @click.command()
 @click.option("--host", default="127.0.0.1", help="Host to bind the server to")
 @click.option("--port", default=8000, type=int, help="Port to bind the server to")
-@click.option("--db", default=None, type=click.Path(path_type=Path), help="Path to the database file")
-@click.option("--cors-origins", default="http://localhost:5173", help="Comma-separated list of allowed CORS origins")
-def main(host: str, port: int, db: Path | None, cors_origins: str) -> None:
+@click.option("--path-prefix", default="/data", type=click.Path(path_type=Path), help="Prefix (directory) for the database file")
+def main(host: str, port: int, path_prefix: Path | None, static_dir: Path | None) -> None:
     global settings
-    if db is not None:
-        settings = Settings(database_path=db)
-    
-    origins = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
-    if not origins:
-        origins = ["http://localhost:5173"]
-    
-    configure_cors(origins)
+    settings = Settings(path_prefix=Path(path_prefix))
     
     run_migrations(settings.database_path)
     
-    uvicorn.run("main:app", host=host, port=port, reload=True)
+    uvicorn.run("main:app", host=host, port=port, reload=static_dir is None)
 
 
 if __name__ == "__main__":

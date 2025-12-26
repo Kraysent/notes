@@ -4,30 +4,32 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from backend.database import run_migrations
-from main import app, settings
+from main import app, settings, DB_NAME
 
 
 @pytest.fixture
 def temp_db() -> Path:
-    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
-        db_path = Path(f.name)
+    temp_dir = Path(tempfile.mkdtemp())
+    db_path = temp_dir / DB_NAME
     
     run_migrations(db_path)
     yield db_path
     
     if db_path.exists():
         db_path.unlink()
+    if temp_dir.exists():
+        temp_dir.rmdir()
 
 
 @pytest.fixture
 def client(temp_db: Path) -> TestClient:
-    original_db_path = settings.database_path
-    settings.database_path = temp_db
+    original_db_prefix = settings.path_prefix
+    settings.path_prefix = temp_db.parent
     
     test_client = TestClient(app)
     yield test_client
     
-    settings.database_path = original_db_path
+    settings.path_prefix = original_db_prefix
 
 
 def test_create_note_and_get_note(client: TestClient) -> None:
