@@ -30,7 +30,8 @@ settings = Settings()
 @click.option("--host", default="127.0.0.1", help="Host to bind the server to")
 @click.option("--port", default=8000, type=int, help="Port to bind the server to")
 @click.option("--path-prefix", default="/data", type=click.Path(path_type=Path), help="Prefix (directory) for the database file")
-def main(host: str, port: int, path_prefix: Path | None) -> None:
+@click.option("--cors-origins", default=None, help="Comma-separated list of allowed CORS origins (e.g., 'http://localhost:5173,http://127.0.0.1:5173')")
+def main(host: str, port: int, path_prefix: Path | None, cors_origins: str | None) -> None:
     global settings
     settings = Settings(path_prefix=Path(path_prefix))
     
@@ -38,9 +39,14 @@ def main(host: str, port: int, path_prefix: Path | None) -> None:
 
     app = FastAPI()
     
+    if cors_origins:
+        origins = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
+    else:
+        origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
