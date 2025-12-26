@@ -1,5 +1,3 @@
-- Text field for entering notes - DONE
-- A button for entering and exiting rendered markdown view
 - Ability to name notes
 - Ability to store notes:
   - sqlite DB + migrations
@@ -10,3 +8,12 @@
 - Search bar by note name
 - Search bar by tag (simple "contains")
 - Support for images (only images that are necessary for the files should be there, also they should not be visible in the list of notes)
+
+Markdown things:
+
+- comments
+- syntax highlighting for different notes
+- code copy-pasting
+- diagrams?
+- dots for enumerations
+- anchors in the html

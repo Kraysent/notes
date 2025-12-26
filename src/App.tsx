@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import Header from './components/Header'
 import NoteEditor from './components/NoteEditor'
-
-type ViewMode = 'raw' | 'markdown'
+import { ViewMode } from './types'
 
 function App() {
-  const [viewMode, setViewMode] = useState<ViewMode>('raw')
+  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Raw)
   const [note, setNote] = useState('')
 
   return (
