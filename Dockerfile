@@ -28,6 +28,4 @@ ENV CORS_ORIGINS=
 
 RUN mkdir -p /app/data
 
-EXPOSE 8000
-
-CMD ["sh", "-c", "mkdir -p \"${PREFIX:-/app/data}\" && uv run python main.py --host \"${HOST:-0.0.0.0}\" --port \"${PORT:-8000}\" --db-prefix \"${PREFIX:-/app/data}\" --cors-origins \"${CORS_ORIGINS:-}\" --static-dir ./static"]
+CMD ["sh", "-c", "mkdir -p \"${PREFIX}\" && uv run python main.py --host \"${HOST}\" --port \"${PORT:-8000}\" --path-prefix \"${PREFIX}\" --cors-origins \"${CORS_ORIGINS}\""]
