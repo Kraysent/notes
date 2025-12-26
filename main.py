@@ -5,6 +5,7 @@ import click
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic_settings import BaseSettings
 
 from backend.database import run_migrations
@@ -58,10 +59,18 @@ def get_app(app_settings: Settings | None = None, cors_origins: str | None = Non
     def list_notes_endpoint(page: int = 1, page_size: int = 50) -> NotesListResponse:
         return list_notes(page, page_size, app_settings.database_path)
 
+    def ping_endpoint() -> dict[str, str]:
+        return {"status": "ok"}
+
+    app.add_api_route("/ping", ping_endpoint, methods=["GET"])
     app.add_api_route("/api/note", get_note_endpoint, methods=["GET"], response_model=NoteResponse)
     app.add_api_route("/api/note", save_note_endpoint, methods=["PUT"], response_model=NoteResponse)
     app.add_api_route("/api/note/title", update_title_endpoint, methods=["PATCH"], response_model=NoteResponse)
     app.add_api_route("/api/notes", list_notes_endpoint, methods=["GET"], response_model=NotesListResponse)
+
+    static_path = Path("static")
+    if static_path.exists():
+        app.mount("/", StaticFiles(directory=str(static_path), html=True), name="static")
 
     return app
 
