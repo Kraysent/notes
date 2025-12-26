@@ -22,6 +22,19 @@ export async function saveNote(title: string, content: string): Promise<Note> {
   return response.json();
 }
 
+export async function getNote(title: string): Promise<Note> {
+  const response = await fetch(`${API_BASE_URL}/api/note?title=${encodeURIComponent(title)}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to get note');
+  }
+  return response.json();
+}
+
 export async function updateTitle(newTitle: string, oldTitle: string): Promise<Note> {
   const response = await fetch(`${API_BASE_URL}/api/note/title`, {
     method: 'PATCH',

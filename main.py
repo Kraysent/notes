@@ -8,7 +8,7 @@ import uvicorn
 
 from backend.database import run_migrations
 from backend.models import NoteResponse, NoteUpdate, TitleUpdate
-from backend.handlers.notes import save_note, update_title
+from backend.handlers.notes import save_note, update_title, get_note_by_title
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -28,6 +28,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/api/note", response_model=NoteResponse)
+def get_note_endpoint(title: str):
+    return get_note_by_title(title, settings.database_path)
 
 
 @app.put("/api/note", response_model=NoteResponse)
