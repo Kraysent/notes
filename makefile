@@ -8,4 +8,4 @@ run:
 	uv run python main.py
 
 test:
-	uv run pytest backend/tests/
+	uv run python -m pytest backend/tests/
