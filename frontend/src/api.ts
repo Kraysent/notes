@@ -8,28 +8,13 @@ export interface Note {
   updated_at: string;
 }
 
-export async function createNote(title: string): Promise<Note> {
-  const response = await fetch(`${API_BASE_URL}/api/note`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ title }),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to create note');
-  }
-  return response.json();
-}
-
 export async function saveNote(title: string, content: string): Promise<Note> {
-  const encodedTitle = encodeURIComponent(title);
-  const response = await fetch(`${API_BASE_URL}/api/note?title=${encodedTitle}`, {
+  const response = await fetch(`${API_BASE_URL}/api/note`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ title, content }),
   });
   if (!response.ok) {
     throw new Error('Failed to save note');

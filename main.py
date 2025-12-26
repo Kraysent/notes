@@ -38,11 +38,8 @@ class NoteResponse(BaseModel):
 
 
 class NoteUpdate(BaseModel):
-    content: str
-
-
-class NoteCreate(BaseModel):
     title: str
+    content: str | None = None
 
 
 class TitleUpdate(BaseModel):
@@ -50,51 +47,34 @@ class TitleUpdate(BaseModel):
     old_title: str
 
 
-@app.post("/api/note", response_model=NoteResponse)
-def create_note(note_create: NoteCreate):
-    conn = get_db_connection(settings.database_path)
-    cursor = conn.cursor()
-    
-    cursor.execute(
-        "INSERT INTO notes (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)",
-        (note_create.title, "", datetime.now().isoformat(), datetime.now().isoformat())
-    )
-    note_id = cursor.lastrowid
-    
-    conn.commit()
-    cursor.execute("SELECT * FROM notes WHERE id = ?", (note_id,))
-    saved_note = cursor.fetchone()
-    conn.close()
-    
-    return {
-        "id": saved_note["id"],
-        "title": saved_note["title"],
-        "content": saved_note["content"],
-        "created_at": saved_note["created_at"],
-        "updated_at": saved_note["updated_at"],
-    }
-
-
 @app.put("/api/note", response_model=NoteResponse)
-def save_note(note_update: NoteUpdate, title: str):
+def save_note(note_update: NoteUpdate):
     conn = get_db_connection(settings.database_path)
     cursor = conn.cursor()
     
-    cursor.execute("SELECT id FROM notes WHERE title = ?", (title,))
-    existing_note = cursor.fetchone()
+    now = datetime.now().isoformat()
+    content = note_update.content if note_update.content is not None else ""
     
-    if not existing_note:
-        conn.close()
-        raise HTTPException(status_code=400, detail=f"No note found with title '{title}'")
-    
-    note_id = existing_note["id"]
-    cursor.execute(
-        "UPDATE notes SET content = ?, updated_at = ? WHERE id = ?",
-        (note_update.content, datetime.now().isoformat(), note_id)
-    )
+    if note_update.content is not None:
+        cursor.execute(
+            """INSERT INTO notes (title, content, created_at, updated_at)
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(title) DO UPDATE SET
+               content = excluded.content,
+               updated_at = ?""",
+            (note_update.title, content, now, now, now)
+        )
+    else:
+        cursor.execute(
+            """INSERT INTO notes (title, content, created_at, updated_at)
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(title) DO UPDATE SET
+               updated_at = ?""",
+            (note_update.title, content, now, now, now)
+        )
     
     conn.commit()
-    cursor.execute("SELECT * FROM notes WHERE id = ?", (note_id,))
+    cursor.execute("SELECT * FROM notes WHERE title = ?", (note_update.title,))
     saved_note = cursor.fetchone()
     conn.close()
     

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Header from './components/Header'
 import NoteEditor from './components/NoteEditor'
 import { ViewMode } from './types'
-import { createNote, updateTitle } from './api'
+import { saveNote, updateTitle } from './api'
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Raw)
@@ -20,9 +20,9 @@ function App() {
           console.error('Failed to update title:', error)
         })
     } else {
-      await createNote(submittedTitle)
+      await saveNote(submittedTitle, note)
         .catch((error) => {
-          console.error('Failed to create note:', error)
+          console.error('Failed to save note:', error)
         })
     }
     setTitle(submittedTitle)
