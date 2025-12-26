@@ -21,13 +21,15 @@ settings = Settings()
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+def configure_cors(origins: list[str]) -> None:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 @app.get("/api/note", response_model=NoteResponse)
@@ -54,10 +56,17 @@ def list_notes_endpoint(page: int = 1, page_size: int = 50):
 @click.option("--host", default="127.0.0.1", help="Host to bind the server to")
 @click.option("--port", default=8000, type=int, help="Port to bind the server to")
 @click.option("--db", default=None, type=click.Path(path_type=Path), help="Path to the database file")
-def main(host: str, port: int, db: Path | None) -> None:
+@click.option("--cors-origins", default="http://localhost:5173", help="Comma-separated list of allowed CORS origins")
+def main(host: str, port: int, db: Path | None, cors_origins: str) -> None:
     global settings
     if db is not None:
         settings = Settings(database_path=db)
+    
+    origins = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
+    if not origins:
+        origins = ["http://localhost:5173"]
+    
+    configure_cors(origins)
     
     run_migrations(settings.database_path)
     
