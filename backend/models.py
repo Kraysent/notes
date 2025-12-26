@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import List
 
 
 class NoteResponse(BaseModel):
@@ -20,8 +19,7 @@ class TitleUpdate(BaseModel):
 
 
 class NotesListResponse(BaseModel):
-    notes: List[NoteResponse]
+    notes: list[NoteResponse]
     total: int
     page: int
     page_size: int
-
