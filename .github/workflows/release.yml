@@ -36,8 +36,9 @@ jobs:
           if [ -z "$TAG" ]; then
             TAG="latest"
           fi
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "image=ghcr.io/${{ github.repository }}:$TAG" >> $GITHUB_OUTPUT
+          echo "image=ghcr.io/$REPO_LOWER:$TAG" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
