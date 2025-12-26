@@ -8,11 +8,11 @@ RUN yarn install --frozen-lockfile
 COPY frontend/ ./
 RUN yarn build
 
-FROM python:3.12-slim AS backend
+FROM ghcr.io/astral-sh/uv:debian-slim AS backend
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir uv
+RUN apt-get update && apt-get install -y --no-install-recommends curl
 
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen

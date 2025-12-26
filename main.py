@@ -3,13 +3,15 @@ from pathlib import Path
 
 import click
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic_settings import BaseSettings
 
 from backend.database import run_migrations
 from backend.handlers.notes import get_note_by_title, list_notes, save_note, update_title
+from backend.handlers.static import serve_static
 from backend.models import NoteResponse, NotesListResponse, NoteUpdate, TitleUpdate
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -62,15 +64,16 @@ def get_app(app_settings: Settings | None = None, cors_origins: str | None = Non
     def ping_endpoint() -> dict[str, str]:
         return {"status": "ok"}
 
+    def serve_static_endpoint(request: Request, full_path: str) -> FileResponse:
+        static_path = Path("static")
+        return serve_static(request, full_path, static_path)
+
     app.add_api_route("/ping", ping_endpoint, methods=["GET"])
     app.add_api_route("/api/note", get_note_endpoint, methods=["GET"], response_model=NoteResponse)
     app.add_api_route("/api/note", save_note_endpoint, methods=["PUT"], response_model=NoteResponse)
     app.add_api_route("/api/note/title", update_title_endpoint, methods=["PATCH"], response_model=NoteResponse)
     app.add_api_route("/api/notes", list_notes_endpoint, methods=["GET"], response_model=NotesListResponse)
-
-    static_path = Path("static")
-    if static_path.exists():
-        app.mount("/", StaticFiles(directory=str(static_path), html=True), name="static")
+    app.add_api_route("/{full_path:path}", serve_static_endpoint, methods=["GET"])
 
     return app
 
