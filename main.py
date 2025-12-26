@@ -1,11 +1,22 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from pydantic_settings import BaseSettings
 from datetime import datetime
 from pathlib import Path
 import click
+import logging
 import uvicorn
-from database import get_db_connection, init_db, set_database_path
+from database import get_db_connection, run_migrations
+
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+
+class Settings(BaseSettings):
+    database_path: Path = Path("data/notes.db")
+
+
+settings = Settings()
 
 app = FastAPI()
 
@@ -31,7 +42,7 @@ class NoteUpdate(BaseModel):
 
 @app.put("/api/note", response_model=NoteResponse)
 def save_note(note_update: NoteUpdate):
-    conn = get_db_connection()
+    conn = get_db_connection(settings.database_path)
     cursor = conn.cursor()
     
     cursor.execute(
@@ -58,11 +69,11 @@ def save_note(note_update: NoteUpdate):
 @click.option("--port", default=8000, type=int, help="Port to bind the server to")
 @click.option("--db", default=None, type=click.Path(path_type=Path), help="Path to the database file")
 def main(host: str, port: int, db: Path | None) -> None:
-    if db is None:
-        db = Path("data/notes.db")
+    global settings
+    if db is not None:
+        settings = Settings(database_path=db)
     
-    set_database_path(db)
-    init_db()
+    run_migrations(settings.database_path)
     
     uvicorn.run("main:app", host=host, port=port, reload=True)
 
