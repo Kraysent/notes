@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Editor from '@monaco-editor/react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { ViewMode } from '../types'
+import { saveNote } from '../api'
 
 interface RawEditorProps {
   note: string
@@ -64,6 +65,63 @@ interface NoteEditorProps {
 }
 
 function NoteEditor({ note, onNoteChange, viewMode }: NoteEditorProps) {
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastSavedContentRef = useRef<string>(note)
+
+  useEffect(() => {
+    lastSavedContentRef.current = note
+  }, [note])
+
+  useEffect(() => {
+    const performAutosave = () => {
+      if (lastSavedContentRef.current !== note) {
+        saveNote(note)
+          .then(() => {
+            lastSavedContentRef.current = note
+          })
+          .catch((error) => {
+            console.error('Failed to autosave note:', error)
+          })
+      }
+    }
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+
+    saveTimeoutRef.current = setTimeout(performAutosave, 2000)
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+    }
+  }, [note])
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (lastSavedContentRef.current !== note) {
+        saveNote(note).catch((error) => {
+          console.error('Failed to save note on page unload:', error)
+        })
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+      if (lastSavedContentRef.current !== note) {
+        saveNote(note).catch((error) => {
+          console.error('Failed to save note on unmount:', error)
+        })
+      }
+    }
+  }, [note])
+
   return (
     <div className="flex-1 overflow-hidden">
       {viewMode === ViewMode.Raw ? (
