@@ -7,8 +7,8 @@ import logging
 import uvicorn
 
 from backend.database import run_migrations
-from backend.models import NoteResponse, NoteUpdate, TitleUpdate
-from backend.handlers.notes import save_note, update_title, get_note_by_title
+from backend.models import NoteResponse, NoteUpdate, TitleUpdate, NotesListResponse
+from backend.handlers.notes import save_note, update_title, get_note_by_title, list_notes
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -43,6 +43,11 @@ def save_note_endpoint(note_update: NoteUpdate):
 @app.patch("/api/note/title", response_model=NoteResponse)
 def update_title_endpoint(title_update: TitleUpdate):
     return update_title(title_update, settings.database_path)
+
+
+@app.get("/api/notes", response_model=NotesListResponse)
+def list_notes_endpoint(page: int = 1, page_size: int = 50):
+    return list_notes(page, page_size, settings.database_path)
 
 
 @click.command()

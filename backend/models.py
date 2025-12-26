@@ -1,8 +1,8 @@
 from pydantic import BaseModel
+from typing import List
 
 
 class NoteResponse(BaseModel):
-    id: int
     title: str
     content: str
     created_at: str
@@ -17,4 +17,11 @@ class NoteUpdate(BaseModel):
 class TitleUpdate(BaseModel):
     new_title: str
     old_title: str
+
+
+class NotesListResponse(BaseModel):
+    notes: List[NoteResponse]
+    total: int
+    page: int
+    page_size: int
 

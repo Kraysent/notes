@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import sqlite3
 
-from backend.models import NoteResponse, NoteUpdate, TitleUpdate
+from backend.models import NoteResponse, NoteUpdate, TitleUpdate, NotesListResponse
 from backend.database import get_db_connection
 
 
@@ -49,7 +49,6 @@ def save_note(note_update: NoteUpdate, database_path: Path) -> NoteResponse:
     conn.close()
     
     return NoteResponse(
-        id=saved_note["id"],
         title=saved_note["title"],
         content=saved_note["content"],
         created_at=_normalize_timestamp(saved_note["created_at"]),
@@ -76,7 +75,6 @@ def update_title(title_update: TitleUpdate, database_path: Path) -> NoteResponse
     conn.close()
     
     return NoteResponse(
-        id=updated_note["id"],
         title=updated_note["title"],
         content=updated_note["content"],
         created_at=_normalize_timestamp(updated_note["created_at"]),
@@ -96,10 +94,47 @@ def get_note_by_title(title: str, database_path: Path) -> NoteResponse:
         raise HTTPException(status_code=404, detail=f"No note found with title '{title}'")
     
     return NoteResponse(
-        id=note["id"],
         title=note["title"],
         content=note["content"],
         created_at=_normalize_timestamp(note["created_at"]),
         updated_at=_normalize_timestamp(note["updated_at"]),
+    )
+
+
+def list_notes(page: int, page_size: int, database_path: Path) -> NotesListResponse:
+    if page < 1:
+        page = 1
+    if page_size < 1:
+        page_size = 50
+    
+    conn = get_db_connection(database_path)
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT COUNT(*) as total FROM notes")
+    total = cursor.fetchone()["total"]
+    
+    offset = (page - 1) * page_size
+    cursor.execute(
+        "SELECT * FROM notes ORDER BY updated_at DESC LIMIT ? OFFSET ?",
+        (page_size, offset)
+    )
+    notes_rows = cursor.fetchall()
+    conn.close()
+    
+    notes = [
+        NoteResponse(
+            title=row["title"],
+            content=row["content"],
+            created_at=_normalize_timestamp(row["created_at"]),
+            updated_at=_normalize_timestamp(row["updated_at"]),
+        )
+        for row in notes_rows
+    ]
+    
+    return NotesListResponse(
+        notes=notes,
+        total=total,
+        page=page,
+        page_size=page_size,
     )
 

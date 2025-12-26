@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header'
 import NoteEditor from './components/NoteEditor'
+import NotesSidebar from './components/NotesSidebar'
 import { ViewMode } from './types'
 import { saveNote, updateTitle, getNote } from './api'
 
@@ -54,6 +55,17 @@ function App() {
     setTitle(submittedTitle)
   }
 
+  const handleNoteClick = (noteTitle: string) => {
+    getNote(noteTitle)
+      .then((loadedNote) => {
+        setTitle(loadedNote.title)
+        setNote(loadedNote.content)
+      })
+      .catch((error) => {
+        console.error('Failed to load note:', error)
+      })
+  }
+
   return (
     <div className="w-full h-screen flex flex-col">
       <Header 
@@ -62,7 +74,10 @@ function App() {
         viewMode={viewMode} 
         onViewModeChange={setViewMode} 
       />
-      <NoteEditor note={note} onNoteChange={setNote} viewMode={viewMode} title={title} />
+      <div className="flex-1 flex overflow-hidden">
+        <NoteEditor note={note} onNoteChange={setNote} viewMode={viewMode} title={title} />
+        <NotesSidebar onNoteClick={handleNoteClick} />
+      </div>
     </div>
   )
 }

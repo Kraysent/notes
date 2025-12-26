@@ -1,7 +1,6 @@
 const API_BASE_URL = 'http://localhost:8000';
 
 export interface Note {
-  id: number;
   title: string;
   content: string;
   created_at: string;
@@ -45,6 +44,26 @@ export async function updateTitle(newTitle: string, oldTitle: string): Promise<N
   });
   if (!response.ok) {
     throw new Error('Failed to update title');
+  }
+  return response.json();
+}
+
+export interface NotesListResponse {
+  notes: Note[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+export async function listNotes(page: number = 1, pageSize: number = 50): Promise<NotesListResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/notes?page=${page}&page_size=${pageSize}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to list notes');
   }
   return response.json();
 }
