@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { KeyboardEvent } from 'react'
-import { MdOutlinePreview, MdOutlineViewHeadline } from 'react-icons/md'
+import { MdOutlinePreview, MdOutlineViewHeadline, MdAdd } from 'react-icons/md'
 import { ViewMode } from '../types'
 import Button from './Button'
 import TextField from './TextField'
@@ -11,9 +11,10 @@ interface HeaderProps {
   onTitleSubmit: (title: string) => void
   viewMode: ViewMode
   onViewModeChange: (mode: ViewMode) => void
+  onNewNote: () => void
 }
 
-function Header({ title, onTitleSubmit, viewMode, onViewModeChange }: HeaderProps) {
+function Header({ title, onTitleSubmit, viewMode, onViewModeChange, onNewNote }: HeaderProps) {
   const [isEditing, setIsEditing] = useState(!title)
   const [editValue, setEditValue] = useState(title)
 
@@ -76,16 +77,24 @@ function Header({ title, onTitleSubmit, viewMode, onViewModeChange }: HeaderProp
           {title}
         </Text>
       )}
-      <Button
-        onClick={() => onViewModeChange(viewMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw)}
-        tooltipKey={viewMode === ViewMode.Raw ? 'view.button.tooltip.raw' : 'view.button.tooltip.markdown'}
-      >
-        {viewMode === ViewMode.Raw ? (
-          <MdOutlinePreview className="text-lg" />
-        ) : (
-          <MdOutlineViewHeadline className="text-lg" />
-        )}
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={onNewNote}
+          tooltipKey="header.newNote.tooltip"
+        >
+          <MdAdd className="text-lg" />
+        </Button>
+        <Button
+          onClick={() => onViewModeChange(viewMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw)}
+          tooltipKey={viewMode === ViewMode.Raw ? 'view.button.tooltip.raw' : 'view.button.tooltip.markdown'}
+        >
+          {viewMode === ViewMode.Raw ? (
+            <MdOutlinePreview className="text-lg" />
+          ) : (
+            <MdOutlineViewHeadline className="text-lg" />
+          )}
+        </Button>
+      </div>
     </div>
   )
 }

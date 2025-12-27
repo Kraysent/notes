@@ -10,6 +10,9 @@
   "header": {
     "input": {
       "placeholder": "Enter note title..."
+    },
+    "newNote": {
+      "tooltip": "New note"
     }
   }
 }

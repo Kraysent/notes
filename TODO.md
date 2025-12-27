@@ -6,7 +6,6 @@
 - Refresh list of notes when adding or updating title of a note
 - Collapse list of notes (by default)
 - Move notes to trash and clean up trashed notes
-- Button for adding new note
 - Do not save on every keystroke, just every 0.5 sec
 - Ability to resize sidebar
 - Proper sidebar pagination

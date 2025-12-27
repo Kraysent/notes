@@ -11,6 +11,11 @@ function App() {
   const [note, setNote] = useState('')
   const [title, setTitle] = useState('')
 
+  const switchNote = (title: string, content: string) => {
+    setTitle(title)
+    setNote(content)
+  }
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const titleParam = params.get('title')
@@ -18,8 +23,7 @@ function App() {
     if (titleParam) {
       getNote(titleParam)
         .then((loadedNote) => {
-          setTitle(loadedNote.title)
-          setNote(loadedNote.content)
+          switchNote(loadedNote.title, loadedNote.content)
         })
         .catch((error) => {
           console.error('Failed to load note:', error)
@@ -74,12 +78,15 @@ function App() {
   const handleNoteClick = (noteTitle: string) => {
     getNote(noteTitle)
       .then((loadedNote) => {
-        setTitle(loadedNote.title)
-        setNote(loadedNote.content)
+        switchNote(loadedNote.title, loadedNote.content)
       })
       .catch((error) => {
         console.error('Failed to load note:', error)
       })
+  }
+
+  const handleNewNote = () => {
+    switchNote('', '')
   }
 
   return (
@@ -88,7 +95,8 @@ function App() {
         title={title} 
         onTitleSubmit={handleTitleSubmit}
         viewMode={viewMode} 
-        onViewModeChange={setViewMode} 
+        onViewModeChange={setViewMode}
+        onNewNote={handleNewNote}
       />
       <div className="flex-1 flex overflow-hidden">
         <NoteEditor note={note} onNoteChange={setNote} viewMode={viewMode} title={title} />
