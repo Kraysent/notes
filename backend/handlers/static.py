@@ -17,4 +17,3 @@ def serve_static(request: Request, full_path: str, static_path: Path) -> FileRes
         return FileResponse(str(index_path))
 
     raise HTTPException(status_code=404)
-
