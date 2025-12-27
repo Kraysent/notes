@@ -4,7 +4,6 @@
 - Search by content
 - Support for images (only images that are necessary for the files should be there, also they should not be visible in the list of notes)
 - Refresh list of notes when adding or updating title of a note
-- Collapse list of notes (by default)
 - Move notes to trash and clean up trashed notes
 - Do not save on every keystroke, just every 0.5 sec
 - Ability to resize sidebar

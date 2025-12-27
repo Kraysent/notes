@@ -13,6 +13,10 @@
     },
     "newNote": {
       "tooltip": "New note"
+    },
+    "sidebar": {
+      "expand": "Expand sidebar",
+      "collapse": "Collapse sidebar"
     }
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { KeyboardEvent } from 'react'
-import { MdOutlinePreview, MdOutlineViewHeadline, MdAdd } from 'react-icons/md'
+import { MdOutlinePreview, MdOutlineViewHeadline, MdAdd, MdOutlineFormatIndentIncrease, MdOutlineFormatIndentDecrease } from 'react-icons/md'
 import { ViewMode } from '../types'
 import Button from './Button'
 import TextField from './TextField'
@@ -12,9 +12,11 @@ interface HeaderProps {
   viewMode: ViewMode
   onViewModeChange: (mode: ViewMode) => void
   onNewNote: () => void
+  isSidebarCollapsed: boolean
+  onSidebarToggle: () => void
 }
 
-function Header({ title, onTitleSubmit, viewMode, onViewModeChange, onNewNote }: HeaderProps) {
+function Header({ title, onTitleSubmit, viewMode, onViewModeChange, onNewNote, isSidebarCollapsed, onSidebarToggle }: HeaderProps) {
   const [isEditing, setIsEditing] = useState(!title)
   const [editValue, setEditValue] = useState(title)
 
@@ -78,6 +80,16 @@ function Header({ title, onTitleSubmit, viewMode, onViewModeChange, onNewNote }:
         </Text>
       )}
       <div className="flex items-center gap-2">
+        <Button
+          onClick={onSidebarToggle}
+          tooltipKey={isSidebarCollapsed ? 'header.sidebar.expand' : 'header.sidebar.collapse'}
+        >
+          {isSidebarCollapsed ? (
+            <MdOutlineFormatIndentDecrease className="text-lg" />
+          ) : (
+            <MdOutlineFormatIndentIncrease className="text-lg" />
+          )}
+        </Button>
         <Button
           onClick={onNewNote}
           tooltipKey="header.newNote.tooltip"

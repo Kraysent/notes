@@ -10,6 +10,7 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Raw)
   const [note, setNote] = useState('')
   const [title, setTitle] = useState('')
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
 
   const switchNote = (title: string, content: string) => {
     setTitle(title)
@@ -97,10 +98,12 @@ function App() {
         viewMode={viewMode} 
         onViewModeChange={setViewMode}
         onNewNote={handleNewNote}
+        isSidebarCollapsed={isSidebarCollapsed}
+        onSidebarToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
       <div className="flex-1 flex overflow-hidden">
         <NoteEditor note={note} onNoteChange={setNote} viewMode={viewMode} title={title} />
-        <NotesSidebar onNoteClick={handleNoteClick} />
+        {!isSidebarCollapsed && <NotesSidebar onNoteClick={handleNoteClick} />}
       </div>
     </div>
   )
