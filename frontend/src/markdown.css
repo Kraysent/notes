@@ -43,27 +43,10 @@
   margin-bottom: 0.25em;
 }
 
-.markdown-content code {
-  font-size: 0.875em;
-  font-weight: 600;
-  background-color: rgba(0, 0, 0, 0.05);
-  padding: 0.125em 0.25em;
-  border-radius: 0.25rem;
-}
-
 @media (prefers-color-scheme: dark) {
   .markdown-content code {
     background-color: rgba(255, 255, 255, 0.1);
   }
-}
-
-.markdown-content pre {
-  margin-top: 0.75em;
-  margin-bottom: 0.75em;
-  padding: 1em;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 0.5rem;
-  overflow-x: auto;
 }
 
 @media (prefers-color-scheme: dark) {

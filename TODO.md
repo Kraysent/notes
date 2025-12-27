@@ -17,8 +17,6 @@ Editor:
 
 Markdown things:
 
-- comments
-- syntax highlighting for different notes
 - code copy button
 - diagrams? mermaid/drawio and stuff, ideally - inline
 - proper dots for enumerations

@@ -2,6 +2,9 @@ import { useEffect, useState, useRef } from 'react'
 import Editor from '@monaco-editor/react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import { MdOutlineAutorenew, MdCheck, MdClear } from 'react-icons/md'
 import { ViewMode, SaveStatus } from '../types'
 import { saveNote } from '../api'
@@ -53,7 +56,27 @@ function MarkdownView({ note }: MarkdownViewProps) {
   return (
     <div className="h-full overflow-auto p-6 bg-white dark:bg-[#1e1e1e] text-gray-900 dark:text-gray-100">
       <div className="max-w-4xl mx-auto markdown-content">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{note}</ReactMarkdown>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            code({ node, inline, className, children, ...props }: any) {
+              const match = /language-(\w+)/.exec(className || '')
+
+              return !inline && match ? (
+                <SyntaxHighlighter style={dracula} PreTag="div" language={match[1]} {...props}>
+                  {String(children).replace(/\n$/, '')}
+                </SyntaxHighlighter>
+              ) : (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              )
+            },
+          }}
+        >
+          {note}
+        </ReactMarkdown>
       </div>
     </div>
   )
