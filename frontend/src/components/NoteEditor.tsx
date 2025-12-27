@@ -2,10 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import Editor from '@monaco-editor/react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import remarkMath from 'remark-math'
 import rehypeRaw from 'rehype-raw'
-import rehypeKatex from 'rehype-katex'
-import 'katex/dist/katex.min.css'
 import { MdOutlineAutorenew, MdCheck, MdClear } from 'react-icons/md'
 import { ViewMode, SaveStatus } from '../types'
 import { saveNote } from '../api'
@@ -56,8 +53,8 @@ function MarkdownView({ note }: MarkdownViewProps) {
     <div className="h-full overflow-auto p-6 bg-[#1e1e1e] text-gray-100">
       <div className="max-w-4xl mx-auto markdown-content">
         <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkMath]}
-          rehypePlugins={[rehypeRaw, rehypeKatex]}
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
           components={{
             h1({ node, children, ...props }: any) {
               return <H1 {...props}>{children}</H1>

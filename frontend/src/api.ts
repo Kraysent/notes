@@ -83,3 +83,21 @@ export async function listNotes(page: number = 1, pageSize: number = 50, query?:
   return response.json();
 }
 
+export async function downloadNote(title: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/note/download?title=${encodeURIComponent(title)}`, {
+    method: 'GET',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to download note');
+  }
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${title}.md`;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+}
+

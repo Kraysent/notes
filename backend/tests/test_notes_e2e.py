@@ -156,3 +156,40 @@ def test_remove_note(client: TestClient) -> None:
     get_removed_response = client.get("/api/note", params={"title": "Note to Remove"})
     assert get_removed_response.status_code == 404
     assert "No note found" in get_removed_response.json()["detail"]
+
+
+def test_download_note(client: TestClient) -> None:
+    note_content = """# My Test Note
+
+This is a test note with **markdown** content.
+
+## Features
+
+- Feature 1
+- Feature 2
+- Feature 3
+
+```python
+def hello():
+    print("Hello, World!")
+```
+
+> This is a blockquote.
+
+[Link to example](https://example.com)
+"""
+    note_data = {"title": "Download Test Note", "content": note_content}
+
+    create_response = client.put("/api/note", json=note_data)
+    assert create_response.status_code == 200
+    created_note = create_response.json()
+    assert created_note["title"] == "Download Test Note"
+    assert created_note["content"] == note_content
+
+    download_response = client.get("/api/note/download", params={"title": "Download Test Note"})
+    assert download_response.status_code == 200
+    assert download_response.headers["content-type"] == "text/markdown; charset=utf-8"
+    assert 'attachment; filename="Download Test Note.md"' in download_response.headers["content-disposition"]
+
+    downloaded_content = download_response.text
+    assert downloaded_content == note_content

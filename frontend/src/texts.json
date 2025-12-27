@@ -14,6 +14,9 @@
     "newNote": {
       "tooltip": "New note"
     },
+    "download": {
+      "tooltip": "Download note as markdown"
+    },
     "sidebar": {
       "expand": "Expand sidebar",
       "collapse": "Collapse sidebar"

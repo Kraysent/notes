@@ -9,6 +9,7 @@
 - Auto cleanup of removed notes
 - Proper error messages on the frontend
 - Dictate and maybe summarize/prompt on the dictated text with LLM
+- Ctrl + K similar to cursor that invokes a small llm that can generate text using prompt
 - Ability to Ctrl + V an image (an cleanup of the image if it is removed from the note)
 - Remember the state of the view of the note (maybe in query parameter)
 - Save scroll state when switching from raw to markdown and vice versa
@@ -25,11 +26,10 @@ More distant things to maybe design:
 - more friendliness for mobile devices
 - tabs? maybe force using search, though feels sketchy
 - export as PDF
-- export as raw markdown
 - more complex rules for searching by title/tags/content/dates
 - deduplication of note titles - maybe something similar to filesystem/note namespaces
 - UI/UX
-- note templates/copying with custom templating (jinja?)
+- note templates/copying with custom templating (jinja?) - user defines template with several variables and when template is instantiated, user is queried
 - ai generation/refinement
 - pin notes?
 - split notes by user/namespace so that users can only view specific notes

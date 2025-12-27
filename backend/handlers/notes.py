@@ -167,3 +167,17 @@ def list_notes(page: int, page_size: int, database_path: Path, query: str | None
         page=page,
         page_size=page_size,
     )
+
+
+def get_note_content_for_download(title: str, database_path: Path) -> str:
+    conn = get_db_connection(database_path)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT content FROM notes WHERE title = ? AND status != 'removed'", (title,))
+    note = cursor.fetchone()
+    conn.close()
+
+    if note is None:
+        raise HTTPException(status_code=404, detail=f"No note found with title '{title}'")
+
+    return note["content"]

@@ -3,7 +3,7 @@ import Header from './components/Header'
 import NoteEditor from './components/NoteEditor'
 import NotesSidebar, { type NotesSidebarRef } from './components/NotesSidebar'
 import { ViewMode } from './types'
-import { saveNote, updateTitle, getNote } from './api'
+import { saveNote, updateTitle, getNote, downloadNote } from './api'
 import { getKeybinding, matchesKeybinding } from './keybindings'
 import settings from './settings.json'
 
@@ -116,6 +116,15 @@ function App() {
     switchNote('', '')
   }
 
+  const handleDownloadNote = () => {
+    if (title && title.trim()) {
+      downloadNote(title)
+        .catch((error) => {
+          console.error('Failed to download note:', error)
+        })
+    }
+  }
+
   return (
     <div className="w-full h-screen flex flex-col">
       <Header 
@@ -126,6 +135,7 @@ function App() {
         onNewNote={handleNewNote}
         isSidebarCollapsed={isSidebarCollapsed}
         onSidebarToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        onDownloadNote={handleDownloadNote}
       />
       <div className="flex-1 flex overflow-hidden">
         <NoteEditor note={note} onNoteChange={setNote} viewMode={viewMode} title={title} />

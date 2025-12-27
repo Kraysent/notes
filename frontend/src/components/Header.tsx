@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { KeyboardEvent } from 'react'
-import { MdOutlinePreview, MdOutlineViewHeadline, MdAdd, MdOutlineFormatIndentIncrease, MdOutlineFormatIndentDecrease } from 'react-icons/md'
+import { MdOutlinePreview, MdOutlineViewHeadline, MdAdd, MdOutlineFormatIndentIncrease, MdOutlineFormatIndentDecrease, MdDownload } from 'react-icons/md'
 import { ViewMode } from '../types'
 import Button from './core/Button'
 import TextField from './core/TextField'
@@ -14,9 +14,10 @@ interface HeaderProps {
   onNewNote: () => void
   isSidebarCollapsed: boolean
   onSidebarToggle: () => void
+  onDownloadNote: () => void
 }
 
-function Header({ title, onTitleSubmit, viewMode, onViewModeChange, onNewNote, isSidebarCollapsed, onSidebarToggle }: HeaderProps) {
+function Header({ title, onTitleSubmit, viewMode, onViewModeChange, onNewNote, isSidebarCollapsed, onSidebarToggle, onDownloadNote }: HeaderProps) {
   const [isEditing, setIsEditing] = useState(!title)
   const [editValue, setEditValue] = useState(title)
 
@@ -90,6 +91,14 @@ function Header({ title, onTitleSubmit, viewMode, onViewModeChange, onNewNote, i
             <MdOutlineFormatIndentIncrease className="text-lg" />
           )}
         </Button>
+        {title && (
+          <Button
+            onClick={onDownloadNote}
+            tooltipKey="header.download.tooltip"
+          >
+            <MdDownload className="text-lg" />
+          </Button>
+        )}
         <Button
           onClick={onNewNote}
           tooltipKey="header.newNote.tooltip"
