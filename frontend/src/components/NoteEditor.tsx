@@ -27,7 +27,7 @@ function RawEditor({ note, onNoteChange }: RawEditorProps) {
       options={{
         minimap: { enabled: false },
         fontSize: 16,
-        lineNumbers: 'off',
+        lineNumbers: 'on',
         wordWrap: 'on',
         padding: { top: 20, bottom: 20 },
         scrollBeyondLastLine: false,
