@@ -10,6 +10,8 @@ import settings from '../settings.json'
 import { H1, H2, H3, H4, H5, H6 } from './markdown/Text'
 import { Link } from './markdown/Link'
 import { Code } from './markdown/Code'
+import { Pre } from './markdown/Pre'
+import { Ul, Ol, Li } from './markdown/List'
 
 interface RawEditorProps {
   note: string
@@ -75,8 +77,20 @@ function MarkdownView({ note }: MarkdownViewProps) {
             code({ node, inline, className, children, ...props }: any) {
               return <Code inline={inline} className={className} {...props}>{children}</Code>
             },
+            pre({ node, children, ...props }: any) {
+              return <Pre {...props}>{children}</Pre>
+            },
             a({ node, href, children, ...props }: any) {
               return <Link href={href} {...props}>{children}</Link>
+            },
+            ul({ node, children, ...props }: any) {
+              return <Ul {...props}>{children}</Ul>
+            },
+            ol({ node, children, ...props }: any) {
+              return <Ol {...props}>{children}</Ol>
+            },
+            li({ node, children, ...props }: any) {
+              return <Li {...props}>{children}</Li>
             },
           }}
         >

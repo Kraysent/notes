@@ -18,8 +18,13 @@ export function Code({ inline, className, children, ...props }: CodeProps) {
     )
   }
 
+  const isInPre = !inline
+  const codeClassName = isInPre 
+    ? `bg-transparent p-0 font-normal ${className || ''}`
+    : `bg-white/10 ${className || ''}`
+
   return (
-    <code className={className} {...props}>
+    <code className={codeClassName} {...props}>
       {children}
     </code>
   )

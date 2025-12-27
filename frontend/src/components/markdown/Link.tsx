@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import LinkCore from '../core/Link'
 
 interface LinkProps {
   href?: string
@@ -8,9 +9,9 @@ interface LinkProps {
 
 export function Link({ href, children, ...props }: LinkProps) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+    <LinkCore href={href} target="_blank" rel="noopener noreferrer" {...props}>
       {children}
-    </a>
+    </LinkCore>
   )
 }
 

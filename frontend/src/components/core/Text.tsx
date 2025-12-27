@@ -26,9 +26,9 @@ interface TextProps extends HTMLAttributes<HTMLDivElement> {
 
 function Text({ children, size = TextSize.H3, color = TextColor.Primary, className = '', ...props }: TextProps) {
   const sizeClasses = {
-    [TextSize.H1]: 'text-[2.25em] font-bold leading-tight mt-0 mb-1',
-    [TextSize.H2]: 'text-[1.5em] font-semibold leading-snug mt-3 mb-1',
-    [TextSize.H3]: 'text-[1.25em] font-semibold leading-normal mt-2 mb-0.5',
+    [TextSize.H1]: 'text-[2.25em] font-bold leading-[1.2] mt-0 mb-[0.5em]',
+    [TextSize.H2]: 'text-[1.5em] font-semibold leading-[1.3] mt-[1.25em] mb-[0.5em]',
+    [TextSize.H3]: 'text-[1.25em] font-semibold leading-[1.4] mt-[1em] mb-[0.4em]',
     [TextSize.H4]: 'text-xl font-semibold leading-normal mt-2 mb-0.5',
     [TextSize.H5]: 'text-lg font-semibold leading-normal mt-2 mb-0.5',
     [TextSize.H6]: 'text-base font-semibold leading-normal mt-1 mb-0.5',
