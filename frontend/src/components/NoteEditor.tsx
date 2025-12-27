@@ -8,6 +8,7 @@ import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import { MdOutlineAutorenew, MdCheck, MdClear } from 'react-icons/md'
 import { ViewMode, SaveStatus } from '../types'
 import { saveNote } from '../api'
+import settings from '../settings.json'
 
 interface RawEditorProps {
   note: string
@@ -129,7 +130,7 @@ function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
           console.error('Failed to autosave note:', error)
           setSaveStatus(SaveStatus.Unsaved)
         })
-    }, 2000)
+    }, settings.autosaveFrequencyMs)
 
     return () => {
       if (saveTimeoutRef.current) {

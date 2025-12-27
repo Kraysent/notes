@@ -5,12 +5,13 @@ import NotesSidebar from './components/NotesSidebar'
 import { ViewMode } from './types'
 import { saveNote, updateTitle, getNote } from './api'
 import { getKeybinding, matchesKeybinding } from './keybindings'
+import settings from './settings.json'
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Raw)
   const [note, setNote] = useState('')
   const [title, setTitle] = useState('')
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(settings.collapseSidebarByDefault)
 
   const switchNote = (title: string, content: string) => {
     setTitle(title)
