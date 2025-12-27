@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { listNotes } from '../api'
 import type { Note } from '../api'
+import Text, { TextSize, TextColor } from './Text'
 
 interface NotesSidebarProps {
   onNoteClick: (title: string) => void
@@ -57,12 +58,12 @@ function NotesSidebar({ onNoteClick }: NotesSidebarProps) {
                 onClick={() => onNoteClick(note.title)}
                 className="w-full text-left p-4 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
               >
-                <div className="font-medium text-gray-900 dark:text-gray-100 break-words mb-1">
+                <Text size={TextSize.Medium} color={TextColor.Primary} className="break-words mb-1">
                   {note.title}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+                </Text>
+                <Text size={TextSize.Small} color={TextColor.Secondary}>
                   {formatDate(note.updated_at)}
-                </div>
+                </Text>
               </button>
             ))}
           </div>

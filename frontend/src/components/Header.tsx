@@ -3,7 +3,8 @@ import type { KeyboardEvent } from 'react'
 import { MdOutlinePreview, MdOutlineViewHeadline } from 'react-icons/md'
 import { ViewMode } from '../types'
 import Button from './Button'
-import Input from './Input'
+import TextField from './TextField'
+import Text, { TextSize, TextColor } from './Text'
 
 interface HeaderProps {
   title: string
@@ -57,7 +58,7 @@ function Header({ title, onTitleSubmit, viewMode, onViewModeChange }: HeaderProp
   return (
     <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur-sm flex items-center justify-between">
       {isEditing ? (
-        <Input
+        <TextField
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -66,12 +67,14 @@ function Header({ title, onTitleSubmit, viewMode, onViewModeChange }: HeaderProp
           placeholderKey="header.input.placeholder"
         />
       ) : (
-        <div
+        <Text
+          size={TextSize.Large}
+          color={TextColor.Primary}
+          className="flex-1 cursor-text"
           onClick={handleClick}
-          className="flex-1 text-xl font-semibold cursor-text"
         >
           {title}
-        </div>
+        </Text>
       )}
       <Button
         onClick={() => onViewModeChange(viewMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw)}

@@ -1,7 +1,7 @@
 import type { KeyboardEvent, ChangeEvent } from 'react'
 import { getText } from '../texts'
 
-interface InputProps {
+interface TextFieldProps {
   value: string
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void
@@ -10,7 +10,7 @@ interface InputProps {
   autoFocus?: boolean
 }
 
-function Input({ value, onChange, onKeyDown, onBlur, placeholderKey, autoFocus }: InputProps) {
+function TextField({ value, onChange, onKeyDown, onBlur, placeholderKey, autoFocus }: TextFieldProps) {
   const placeholder = placeholderKey ? getText(placeholderKey) : ""
 
   return (
@@ -27,5 +27,5 @@ function Input({ value, onChange, onKeyDown, onBlur, placeholderKey, autoFocus }
   )
 }
 
-export default Input
+export default TextField
 
