@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Header from './components/Header'
 import NoteEditor from './components/NoteEditor'
-import NotesSidebar from './components/NotesSidebar'
+import NotesSidebar, { type NotesSidebarRef } from './components/NotesSidebar'
 import { ViewMode } from './types'
 import { saveNote, updateTitle, getNote } from './api'
 import { getKeybinding, matchesKeybinding } from './keybindings'
@@ -11,7 +11,11 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Raw)
   const [note, setNote] = useState('')
   const [title, setTitle] = useState('')
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(settings.collapseSidebarByDefault)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebarCollapsed')
+    return saved !== null ? saved === 'true' : settings.collapseSidebarByDefault
+  })
+  const sidebarRef = useRef<NotesSidebarRef>(null)
 
   const switchNote = (title: string, content: string) => {
     setTitle(title)
@@ -42,6 +46,10 @@ function App() {
     }
     window.history.replaceState({}, '', url.toString())
   }, [title])
+
+  useEffect(() => {
+    localStorage.setItem('sidebarCollapsed', String(isSidebarCollapsed))
+  }, [isSidebarCollapsed])
 
   useEffect(() => {
     const handleKeyDown = (e: globalThis.KeyboardEvent) => {
@@ -75,6 +83,7 @@ function App() {
         })
     }
     setTitle(submittedTitle)
+    sidebarRef.current?.refresh()
   }
 
   const handleNoteClick = (noteTitle: string) => {
@@ -104,7 +113,7 @@ function App() {
       />
       <div className="flex-1 flex overflow-hidden">
         <NoteEditor note={note} onNoteChange={setNote} viewMode={viewMode} title={title} />
-        {!isSidebarCollapsed && <NotesSidebar onNoteClick={handleNoteClick} />}
+        {!isSidebarCollapsed && <NotesSidebar ref={sidebarRef} onNoteClick={handleNoteClick} />}
       </div>
     </div>
   )

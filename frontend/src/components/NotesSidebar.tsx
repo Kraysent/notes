@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useImperativeHandle, forwardRef, useCallback } from 'react'
 import { listNotes } from '../api'
 import type { Note } from '../api'
 import Text, { TextSize, TextColor } from './Text'
@@ -7,11 +7,16 @@ interface NotesSidebarProps {
   onNoteClick: (title: string) => void
 }
 
-function NotesSidebar({ onNoteClick }: NotesSidebarProps) {
+export interface NotesSidebarRef {
+  refresh: () => void
+}
+
+function NotesSidebar({ onNoteClick }: NotesSidebarProps, ref: React.Ref<NotesSidebarRef>) {
   const [notes, setNotes] = useState<Note[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
+    setLoading(true)
     listNotes(1, 50)
       .then((response) => {
         setNotes(response.notes)
@@ -22,6 +27,14 @@ function NotesSidebar({ onNoteClick }: NotesSidebarProps) {
         setLoading(false)
       })
   }, [])
+
+  useImperativeHandle(ref, () => ({
+    refresh
+  }), [refresh])
+
+  useEffect(() => {
+    refresh()
+  }, [refresh])
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString)
@@ -73,5 +86,5 @@ function NotesSidebar({ onNoteClick }: NotesSidebarProps) {
   )
 }
 
-export default NotesSidebar
+export default forwardRef(NotesSidebar)
 
