@@ -1,7 +1,9 @@
 import { useEffect, useState, useImperativeHandle, forwardRef, useCallback } from 'react'
-import { listNotes } from '../api'
+import { listNotes, saveNote } from '../api'
 import type { Note } from '../api'
 import Text, { TextSize, TextColor } from './core/Text'
+import Button from './core/Button'
+import { MdDelete } from 'react-icons/md'
 
 interface NotesListProps {
   onNoteClick: (title: string) => void
@@ -48,6 +50,15 @@ function NotesList({ onNoteClick, searchQuery }: NotesListProps, ref: React.Ref<
     })
   }
 
+  const handleDelete = async (title: string) => {
+    try {
+      await saveNote(title, undefined, 'removed')
+      refresh()
+    } catch (error) {
+      console.error('Failed to delete note:', error)
+    }
+  }
+
   if (loading) {
     return (
       <div className="p-4 text-gray-400">Loading notes...</div>
@@ -63,18 +74,30 @@ function NotesList({ onNoteClick, searchQuery }: NotesListProps, ref: React.Ref<
   return (
     <div className="divide-y divide-gray-700">
       {notes.map((note) => (
-        <button
+        <div
           key={note.title}
-          onClick={() => onNoteClick(note.title)}
-          className="w-full text-left p-4 hover:bg-gray-800 transition-colors"
+          className="w-full flex items-center group hover:bg-gray-800 transition-colors"
         >
-          <Text size={TextSize.Medium} color={TextColor.Primary} className="break-words mb-1">
-            {note.title}
-          </Text>
-          <Text size={TextSize.Small} color={TextColor.Secondary}>
-            {formatDate(note.updated_at)}
-          </Text>
-        </button>
+          <button
+            onClick={() => onNoteClick(note.title)}
+            className="flex-1 text-left p-4"
+          >
+            <Text size={TextSize.Medium} color={TextColor.Primary} className="break-words mb-1">
+              {note.title}
+            </Text>
+            <Text size={TextSize.Small} color={TextColor.Secondary}>
+              {formatDate(note.updated_at)}
+            </Text>
+          </button>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="mr-2 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Button onClick={() => handleDelete(note.title)}>
+              <MdDelete size={20} />
+            </Button>
+          </div>
+        </div>
       ))}
     </div>
   )

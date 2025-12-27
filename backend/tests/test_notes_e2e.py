@@ -125,3 +125,34 @@ def test_search_notes(client: TestClient) -> None:
     empty_query_data = empty_query_response.json()
     assert len(empty_query_data["notes"]) == 2
     assert empty_query_data["total"] == 2
+
+
+def test_remove_note(client: TestClient) -> None:
+    note_data = {"title": "Note to Remove", "content": "This note will be removed"}
+
+    create_response = client.put("/api/note", json=note_data)
+    assert create_response.status_code == 200
+    created_note = create_response.json()
+    assert created_note["title"] == "Note to Remove"
+    assert created_note["status"] == "active"
+
+    get_response = client.get("/api/note", params={"title": "Note to Remove"})
+    assert get_response.status_code == 200
+    retrieved_note = get_response.json()
+    assert retrieved_note["title"] == "Note to Remove"
+
+    remove_data = {"title": "Note to Remove", "status": "removed"}
+    remove_response = client.put("/api/note", json=remove_data)
+    assert remove_response.status_code == 200
+    removed_note = remove_response.json()
+    assert removed_note["status"] == "removed"
+
+    list_response = client.get("/api/notes", params={"page": 1, "page_size": 50})
+    assert list_response.status_code == 200
+    list_data = list_response.json()
+    note_titles = {note["title"] for note in list_data["notes"]}
+    assert "Note to Remove" not in note_titles
+
+    get_removed_response = client.get("/api/note", params={"title": "Note to Remove"})
+    assert get_removed_response.status_code == 404
+    assert "No note found" in get_removed_response.json()["detail"]

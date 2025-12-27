@@ -6,11 +6,13 @@ class NoteResponse(BaseModel):
     content: str
     created_at: str
     updated_at: str
+    status: str
 
 
 class NoteUpdate(BaseModel):
     title: str
     content: str | None = None
+    status: str | None = None
 
 
 class TitleUpdate(BaseModel):

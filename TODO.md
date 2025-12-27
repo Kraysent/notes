@@ -1,13 +1,14 @@
 - Ability to tag notes
 - Search by tag (simple "contains")
 - Support for images (only images that are necessary for the files should be there, also they should not be visible in the list of notes)
-- Move notes to trash and clean up trashed notes
 - Do not save on every keystroke, just every 0.5 sec
 - Ability to resize sidebar
 - Proper sidebar pagination
 - Hotkey for switching between notes
 - Ability to choose whether to search by title or content separately
 - On mobile - better switch between sidebar and main editor so that they occupy the whole screen
+- Auto cleanup of removed notes
+- Proper error messages on the frontend
 
 Markdown things:
 
@@ -30,3 +31,4 @@ More distant things to maybe design:
 - note templates/copying with custom templating (jinja?)
 - ai generation/refinement
 - pin notes?
+- split notes by user/namespace so that users can only view specific notes

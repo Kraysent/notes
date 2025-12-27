@@ -23,24 +23,34 @@ def save_note(note_update: NoteUpdate, database_path: Path) -> NoteResponse:
     cursor = conn.cursor()
 
     now = datetime.now(UTC).isoformat()
-    content = note_update.content if note_update.content is not None else ""
 
-    if note_update.content is not None:
+    cursor.execute("SELECT * FROM notes WHERE title = ?", (note_update.title,))
+    existing_note = cursor.fetchone()
+
+    if existing_note:
+        update_parts = ["updated_at = ?"]
+        update_values = [now]
+
+        if note_update.content is not None:
+            update_parts.append("content = ?")
+            update_values.append(note_update.content)
+
+        if note_update.status is not None:
+            update_parts.append("status = ?")
+            update_values.append(note_update.status)
+
+        update_values.append(note_update.title)
         cursor.execute(
-            """INSERT INTO notes (title, content, created_at, updated_at)
-               VALUES (?, ?, ?, ?)
-               ON CONFLICT(title) DO UPDATE SET
-               content = excluded.content,
-               updated_at = ?""",
-            (note_update.title, content, now, now, now),
+            f"UPDATE notes SET {', '.join(update_parts)} WHERE title = ?",
+            update_values,
         )
     else:
+        content = note_update.content if note_update.content is not None else ""
+        status = note_update.status if note_update.status is not None else "active"
         cursor.execute(
-            """INSERT INTO notes (title, content, created_at, updated_at)
-               VALUES (?, ?, ?, ?)
-               ON CONFLICT(title) DO UPDATE SET
-               updated_at = ?""",
-            (note_update.title, content, now, now, now),
+            """INSERT INTO notes (title, content, status, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?)""",
+            (note_update.title, content, status, now, now),
         )
 
     conn.commit()
@@ -53,6 +63,7 @@ def save_note(note_update: NoteUpdate, database_path: Path) -> NoteResponse:
         content=saved_note["content"],
         created_at=_normalize_timestamp(saved_note["created_at"]),
         updated_at=_normalize_timestamp(saved_note["updated_at"]),
+        status=saved_note["status"],
     )
 
 
@@ -79,6 +90,7 @@ def update_title(title_update: TitleUpdate, database_path: Path) -> NoteResponse
         content=updated_note["content"],
         created_at=_normalize_timestamp(updated_note["created_at"]),
         updated_at=_normalize_timestamp(updated_note["updated_at"]),
+        status=updated_note["status"],
     )
 
 
@@ -86,7 +98,7 @@ def get_note_by_title(title: str, database_path: Path) -> NoteResponse:
     conn = get_db_connection(database_path)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM notes WHERE title = ?", (title,))
+    cursor.execute("SELECT * FROM notes WHERE title = ? AND status != 'removed'", (title,))
     note = cursor.fetchone()
     conn.close()
 
@@ -98,6 +110,7 @@ def get_note_by_title(title: str, database_path: Path) -> NoteResponse:
         content=note["content"],
         created_at=_normalize_timestamp(note["created_at"]),
         updated_at=_normalize_timestamp(note["updated_at"]),
+        status=note["status"],
     )
 
 
@@ -113,21 +126,26 @@ def list_notes(page: int, page_size: int, database_path: Path, query: str | None
     if query:
         search_pattern = f"%{query}%"
         cursor.execute(
-            "SELECT COUNT(*) as total FROM notes WHERE title LIKE ? OR content LIKE ?", (search_pattern, search_pattern)
+            "SELECT COUNT(*) as total FROM notes WHERE status = 'active' AND (title LIKE ? OR content LIKE ?)",
+            (search_pattern, search_pattern),
         )
         total = cursor.fetchone()["total"]
 
         offset = (page - 1) * page_size
         cursor.execute(
-            "SELECT * FROM notes WHERE title LIKE ? OR content LIKE ? ORDER BY updated_at DESC LIMIT ? OFFSET ?",
+            "SELECT * FROM notes WHERE status = 'active' AND (title LIKE ? OR content LIKE ?) "
+            "ORDER BY updated_at DESC LIMIT ? OFFSET ?",
             (search_pattern, search_pattern, page_size, offset),
         )
     else:
-        cursor.execute("SELECT COUNT(*) as total FROM notes")
+        cursor.execute("SELECT COUNT(*) as total FROM notes WHERE status = 'active'")
         total = cursor.fetchone()["total"]
 
         offset = (page - 1) * page_size
-        cursor.execute("SELECT * FROM notes ORDER BY updated_at DESC LIMIT ? OFFSET ?", (page_size, offset))
+        cursor.execute(
+            "SELECT * FROM notes WHERE status = 'active' ORDER BY updated_at DESC LIMIT ? OFFSET ?",
+            (page_size, offset),
+        )
 
     notes_rows = cursor.fetchall()
     conn.close()
@@ -138,6 +156,7 @@ def list_notes(page: int, page_size: int, database_path: Path, query: str | None
             content=row["content"],
             created_at=_normalize_timestamp(row["created_at"]),
             updated_at=_normalize_timestamp(row["updated_at"]),
+            status=row["status"],
         )
         for row in notes_rows
     ]

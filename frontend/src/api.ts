@@ -5,15 +5,23 @@ export interface Note {
   content: string;
   created_at: string;
   updated_at: string;
+  status: string;
 }
 
-export async function saveNote(title: string, content: string): Promise<Note> {
+export async function saveNote(title: string, content?: string, status?: string): Promise<Note> {
+  const body: { title: string; content?: string; status?: string } = { title };
+  if (content !== undefined) {
+    body.content = content;
+  }
+  if (status !== undefined) {
+    body.status = status;
+  }
   const response = await fetch(`${API_BASE_URL}/api/note`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ title, content }),
+    body: JSON.stringify(body),
   });
   if (!response.ok) {
     throw new Error('Failed to save note');
