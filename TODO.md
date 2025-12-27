@@ -9,6 +9,7 @@
 - On mobile - better switch between sidebar and main editor so that they occupy the whole screen
 - Auto cleanup of removed notes
 - Proper error messages on the frontend
+- Dictate and maybe summarize/prompt on the dictated text with LLM
 
 Markdown things:
 
