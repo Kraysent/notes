@@ -71,7 +71,7 @@ function Header({ title, onTitleSubmit, viewMode, onViewModeChange, onNewNote, i
         />
       ) : (
         <Text
-          size={TextSize.Large}
+          size={TextSize.H3}
           color={TextColor.Primary}
           className="flex-1 cursor-text"
           onClick={handleClick}

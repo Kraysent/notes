@@ -3,13 +3,13 @@ import Editor from '@monaco-editor/react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism'
-import { MdOutlineAutorenew, MdCheck, MdClear, MdContentCopy } from 'react-icons/md'
+import { MdOutlineAutorenew, MdCheck, MdClear } from 'react-icons/md'
 import { ViewMode, SaveStatus } from '../types'
 import { saveNote } from '../api'
 import settings from '../settings.json'
-import Button from './core/Button'
+import { H1, H2, H3, H4, H5, H6 } from './markdown/Text'
+import { Link } from './markdown/Link'
+import { Code } from './markdown/Code'
 
 interface RawEditorProps {
   note: string
@@ -42,40 +42,6 @@ function RawEditor({ note, onNoteChange }: RawEditorProps) {
   )
 }
 
-interface CodeBlockProps {
-  language: string
-  children: string
-  [key: string]: any
-}
-
-function CodeBlock({ language, children, ...props }: CodeBlockProps) {
-  const [copied, setCopied] = useState(false)
-  const codeContent = String(children).replace(/\n$/, '')
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(codeContent)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (error) {
-      console.error('Failed to copy code:', error)
-    }
-  }
-
-  return (
-    <div className="relative group">
-      <SyntaxHighlighter style={dracula} PreTag="div" language={language} {...props}>
-        {codeContent}
-      </SyntaxHighlighter>
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button onClick={handleCopy}>
-          {copied ? <MdCheck /> : <MdContentCopy />}
-        </Button>
-      </div>
-    </div>
-  )
-}
-
 interface MarkdownViewProps {
   note: string
 }
@@ -88,25 +54,29 @@ function MarkdownView({ note }: MarkdownViewProps) {
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw]}
           components={{
+            h1({ node, children, ...props }: any) {
+              return <H1 {...props}>{children}</H1>
+            },
+            h2({ node, children, ...props }: any) {
+              return <H2 {...props}>{children}</H2>
+            },
+            h3({ node, children, ...props }: any) {
+              return <H3 {...props}>{children}</H3>
+            },
+            h4({ node, children, ...props }: any) {
+              return <H4 {...props}>{children}</H4>
+            },
+            h5({ node, children, ...props }: any) {
+              return <H5 {...props}>{children}</H5>
+            },
+            h6({ node, children, ...props }: any) {
+              return <H6 {...props}>{children}</H6>
+            },
             code({ node, inline, className, children, ...props }: any) {
-              const match = /language-(\w+)/.exec(className || '')
-
-              return !inline && match ? (
-                <CodeBlock language={match[1]} {...props}>
-                  {children}
-                </CodeBlock>
-              ) : (
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              )
+              return <Code inline={inline} className={className} {...props}>{children}</Code>
             },
             a({ node, href, children, ...props }: any) {
-              return (
-                <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-                  {children}
-                </a>
-              )
+              return <Link href={href} {...props}>{children}</Link>
             },
           }}
         >

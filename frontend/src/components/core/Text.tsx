@@ -1,9 +1,13 @@
 import type { ReactNode, HTMLAttributes } from 'react'
 
 export const TextSize = {
-  Large: 'large',
-  Medium: 'medium',
-  Small: 'small',
+  H1: 'h1',
+  H2: 'h2',
+  H3: 'h3',
+  H4: 'h4',
+  H5: 'h5',
+  H6: 'h6',
+  Text: 'text',
 } as const
 
 export const TextColor = {
@@ -20,11 +24,15 @@ interface TextProps extends HTMLAttributes<HTMLDivElement> {
   color?: TextColorType
 }
 
-function Text({ children, size = TextSize.Medium, color = TextColor.Primary, className = '', ...props }: TextProps) {
+function Text({ children, size = TextSize.H3, color = TextColor.Primary, className = '', ...props }: TextProps) {
   const sizeClasses = {
-    [TextSize.Large]: 'text-xl font-semibold',
-    [TextSize.Medium]: 'font-medium',
-    [TextSize.Small]: 'text-sm',
+    [TextSize.H1]: 'text-[2.25em] font-bold leading-tight mt-0 mb-1',
+    [TextSize.H2]: 'text-[1.5em] font-semibold leading-snug mt-3 mb-1',
+    [TextSize.H3]: 'text-[1.25em] font-semibold leading-normal mt-2 mb-0.5',
+    [TextSize.H4]: 'text-xl font-semibold leading-normal mt-2 mb-0.5',
+    [TextSize.H5]: 'text-lg font-semibold leading-normal mt-2 mb-0.5',
+    [TextSize.H6]: 'text-base font-semibold leading-normal mt-1 mb-0.5',
+    [TextSize.Text]: 'text-sm leading-normal',
   }
 
   const colorClasses = {

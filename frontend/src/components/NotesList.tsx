@@ -80,12 +80,12 @@ function NotesList({ onNoteClick, searchQuery }: NotesListProps, ref: React.Ref<
         >
           <button
             onClick={() => onNoteClick(note.title)}
-            className="flex-1 text-left p-4"
+            className="flex-1 text-left p-1 pl-4"
           >
-            <Text size={TextSize.Medium} color={TextColor.Primary} className="break-words mb-1">
+            <Text size={TextSize.H6} color={TextColor.Primary} className="break-words">
               {note.title}
             </Text>
-            <Text size={TextSize.Small} color={TextColor.Secondary}>
+            <Text size={TextSize.Text} color={TextColor.Secondary}>
               {formatDate(note.updated_at)}
             </Text>
           </button>
