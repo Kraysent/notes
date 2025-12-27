@@ -7,10 +7,7 @@
 - Proper sidebar pagination
 - Hotkey for switching between notes
 - Ability to choose whether to search by title or content separately
-
-Editor:
-
-- Disable suggestions in the editor
+- On mobile - better switch between sidebar and main editor so that they occupy the whole screen
 
 Markdown things:
 
@@ -32,3 +29,4 @@ More distant things to maybe design:
 - UI/UX
 - note templates/copying with custom templating (jinja?)
 - ai generation/refinement
+- pin notes?

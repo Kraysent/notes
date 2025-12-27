@@ -30,6 +30,12 @@ function RawEditor({ note, onNoteChange }: RawEditorProps) {
         wordWrap: 'on',
         padding: { top: 20, bottom: 20 },
         scrollBeyondLastLine: false,
+        quickSuggestions: false,
+        suggestOnTriggerCharacters: false,
+        acceptSuggestionOnEnter: 'off',
+        tabCompletion: 'off',
+        wordBasedSuggestions: 'off',
+        parameterHints: { enabled: false },
       }}
     />
   )
