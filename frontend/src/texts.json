@@ -1,0 +1,17 @@
+{
+  "view": {
+    "button": {
+      "tooltip": {
+        "raw": "Switch to Markdown view",
+        "markdown": "Switch to Raw view"
+      }
+    }
+  },
+  "header": {
+    "input": {
+      "placeholder": "Enter note title..."
+    }
+  }
+}
+
+

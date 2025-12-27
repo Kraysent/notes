@@ -4,6 +4,7 @@ import NoteEditor from './components/NoteEditor'
 import NotesSidebar from './components/NotesSidebar'
 import { ViewMode } from './types'
 import { saveNote, updateTitle, getNote } from './api'
+import { getKeybinding, matchesKeybinding } from './keybindings'
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Raw)
@@ -35,6 +36,21 @@ function App() {
     }
     window.history.replaceState({}, '', url.toString())
   }, [title])
+
+  useEffect(() => {
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      const viewToggleBinding = getKeybinding('view.toggle')
+      if (viewToggleBinding && matchesKeybinding(e, viewToggleBinding)) {
+        e.preventDefault()
+        setViewMode((prevMode) => 
+          prevMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw
+        )
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   const handleTitleSubmit = async (submittedTitle: string) => {
     if (!submittedTitle.trim()) {

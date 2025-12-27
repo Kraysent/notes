@@ -1,17 +1,20 @@
 import type { ReactNode } from 'react'
+import { getText } from '../texts'
 
 interface ButtonProps {
   children: ReactNode
   onClick: () => void
-  title?: string
+  tooltipKey?: string
 }
 
-function Button({ children, onClick, title }: ButtonProps) {
+function Button({ children, onClick, tooltipKey }: ButtonProps) {
+  const tooltip = tooltipKey ? getText(tooltipKey) : ""
+
   return (
     <button
       onClick={onClick}
       className="px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#2d2d2d] hover:bg-gray-50 dark:hover:bg-[#3d3d3d] transition-colors flex items-center justify-center"
-      title={title}
+      title={tooltip}
     >
       {children}
     </button>

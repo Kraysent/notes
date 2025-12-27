@@ -10,7 +10,6 @@
 - Do not save on every keystroke, just every 0.5 sec
 - Ability to resize sidebar
 - Proper sidebar pagination
-- Hotkey for switching between raw and markdown
 - Hotkey for switching between notes
 
 Editor:

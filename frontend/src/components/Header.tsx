@@ -3,6 +3,7 @@ import type { KeyboardEvent } from 'react'
 import { MdOutlinePreview, MdOutlineViewHeadline } from 'react-icons/md'
 import { ViewMode } from '../types'
 import Button from './Button'
+import Input from './Input'
 
 interface HeaderProps {
   title: string
@@ -56,15 +57,13 @@ function Header({ title, onTitleSubmit, viewMode, onViewModeChange }: HeaderProp
   return (
     <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur-sm flex items-center justify-between">
       {isEditing ? (
-        <input
-          type="text"
+        <Input
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
           autoFocus
-          className="flex-1 text-xl font-semibold bg-transparent border-none outline-none focus:outline-none p-0 m-0"
-          placeholder="Enter note title..."
+          placeholderKey="header.input.placeholder"
         />
       ) : (
         <div
@@ -76,7 +75,7 @@ function Header({ title, onTitleSubmit, viewMode, onViewModeChange }: HeaderProp
       )}
       <Button
         onClick={() => onViewModeChange(viewMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw)}
-        title={viewMode === ViewMode.Raw ? 'Switch to Markdown view' : 'Switch to Raw view'}
+        tooltipKey={viewMode === ViewMode.Raw ? 'view.button.tooltip.raw' : 'view.button.tooltip.markdown'}
       >
         {viewMode === ViewMode.Raw ? (
           <MdOutlinePreview className="text-lg" />
