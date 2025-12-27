@@ -21,7 +21,7 @@ Markdown things:
 - comments
 - syntax highlighting for different notes
 - code copy button
-- diagrams? mermaid and stuff
+- diagrams? mermaid/drawio and stuff, ideally - inline
 - proper dots for enumerations
 - anchors in the html
 - clickable checklist items

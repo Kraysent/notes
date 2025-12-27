@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import type { KeyboardEvent } from 'react'
+import { MdOutlinePreview, MdOutlineViewHeadline } from 'react-icons/md'
 import { ViewMode } from '../types'
+import Button from './Button'
 
 interface HeaderProps {
   title: string
@@ -72,12 +74,16 @@ function Header({ title, onTitleSubmit, viewMode, onViewModeChange }: HeaderProp
           {title}
         </div>
       )}
-      <button
+      <Button
         onClick={() => onViewModeChange(viewMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw)}
-        className="px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#2d2d2d] hover:bg-gray-50 dark:hover:bg-[#3d3d3d] transition-colors"
+        title={viewMode === ViewMode.Raw ? 'Switch to Markdown view' : 'Switch to Raw view'}
       >
-        {viewMode === ViewMode.Raw ? 'Markdown' : 'Raw'}
-      </button>
+        {viewMode === ViewMode.Raw ? (
+          <MdOutlinePreview className="text-lg" />
+        ) : (
+          <MdOutlineViewHeadline className="text-lg" />
+        )}
+      </Button>
     </div>
   )
 }
