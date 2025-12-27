@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { getText } from '../texts'
+import { getText } from '../../texts'
 
 interface ButtonProps {
   children: ReactNode

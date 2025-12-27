@@ -1,7 +1,7 @@
 import { useEffect, useState, useImperativeHandle, forwardRef, useCallback } from 'react'
 import { listNotes } from '../api'
 import type { Note } from '../api'
-import Text, { TextSize, TextColor } from './Text'
+import Text, { TextSize, TextColor } from './core/Text'
 
 interface NotesListProps {
   onNoteClick: (title: string) => void

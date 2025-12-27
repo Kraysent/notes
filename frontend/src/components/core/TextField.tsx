@@ -1,5 +1,5 @@
 import type { KeyboardEvent, ChangeEvent } from 'react'
-import { getText } from '../texts'
+import { getText } from '../../texts'
 
 interface TextFieldProps {
   value: string

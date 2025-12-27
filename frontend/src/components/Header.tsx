@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import type { KeyboardEvent } from 'react'
 import { MdOutlinePreview, MdOutlineViewHeadline, MdAdd, MdOutlineFormatIndentIncrease, MdOutlineFormatIndentDecrease } from 'react-icons/md'
 import { ViewMode } from '../types'
-import Button from './Button'
-import TextField from './TextField'
-import Text, { TextSize, TextColor } from './Text'
+import Button from './core/Button'
+import TextField from './core/TextField'
+import Text, { TextSize, TextColor } from './core/Text'
 
 interface HeaderProps {
   title: string
