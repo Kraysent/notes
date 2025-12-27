@@ -101,7 +101,7 @@ def get_note_by_title(title: str, database_path: Path) -> NoteResponse:
     )
 
 
-def list_notes(page: int, page_size: int, database_path: Path) -> NotesListResponse:
+def list_notes(page: int, page_size: int, database_path: Path, query: str | None = None) -> NotesListResponse:
     if page < 1:
         page = 1
     if page_size < 1:
@@ -110,11 +110,25 @@ def list_notes(page: int, page_size: int, database_path: Path) -> NotesListRespo
     conn = get_db_connection(database_path)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT COUNT(*) as total FROM notes")
-    total = cursor.fetchone()["total"]
+    if query:
+        search_pattern = f"%{query}%"
+        cursor.execute(
+            "SELECT COUNT(*) as total FROM notes WHERE title LIKE ? OR content LIKE ?", (search_pattern, search_pattern)
+        )
+        total = cursor.fetchone()["total"]
 
-    offset = (page - 1) * page_size
-    cursor.execute("SELECT * FROM notes ORDER BY updated_at DESC LIMIT ? OFFSET ?", (page_size, offset))
+        offset = (page - 1) * page_size
+        cursor.execute(
+            "SELECT * FROM notes WHERE title LIKE ? OR content LIKE ? ORDER BY updated_at DESC LIMIT ? OFFSET ?",
+            (search_pattern, search_pattern, page_size, offset),
+        )
+    else:
+        cursor.execute("SELECT COUNT(*) as total FROM notes")
+        total = cursor.fetchone()["total"]
+
+        offset = (page - 1) * page_size
+        cursor.execute("SELECT * FROM notes ORDER BY updated_at DESC LIMIT ? OFFSET ?", (page_size, offset))
+
     notes_rows = cursor.fetchall()
     conn.close()
 

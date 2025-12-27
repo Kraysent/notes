@@ -15,6 +15,7 @@ function App() {
     const saved = localStorage.getItem('sidebarCollapsed')
     return saved !== null ? saved === 'true' : settings.collapseSidebarByDefault
   })
+  const [searchQuery, setSearchQuery] = useState('')
   const sidebarRef = useRef<NotesSidebarRef>(null)
 
   const switchNote = (title: string, content: string) => {
@@ -25,6 +26,11 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const titleParam = params.get('title')
+    const queryParam = params.get('query')
+    
+    if (queryParam) {
+      setSearchQuery(queryParam)
+    }
     
     if (titleParam) {
       getNote(titleParam)
@@ -46,6 +52,16 @@ function App() {
     }
     window.history.replaceState({}, '', url.toString())
   }, [title])
+
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (searchQuery && searchQuery.trim()) {
+      url.searchParams.set('query', searchQuery.trim())
+    } else {
+      url.searchParams.delete('query')
+    }
+    window.history.replaceState({}, '', url.toString())
+  }, [searchQuery])
 
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', String(isSidebarCollapsed))
@@ -113,7 +129,14 @@ function App() {
       />
       <div className="flex-1 flex overflow-hidden">
         <NoteEditor note={note} onNoteChange={setNote} viewMode={viewMode} title={title} />
-        {!isSidebarCollapsed && <NotesSidebar ref={sidebarRef} onNoteClick={handleNoteClick} />}
+        {!isSidebarCollapsed && (
+          <NotesSidebar 
+            ref={sidebarRef} 
+            onNoteClick={handleNoteClick}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+        )}
       </div>
     </div>
   )

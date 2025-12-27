@@ -91,3 +91,37 @@ def test_create_note_change_title_and_get_note(client: TestClient) -> None:
     retrieved_note = get_new_title_response.json()
     assert retrieved_note["title"] == "New Title"
     assert retrieved_note["content"] == "Note content"
+
+
+def test_search_notes(client: TestClient) -> None:
+    note1_data = {"title": "Python Tutorial", "content": "Learn Python programming"}
+    note2_data = {"title": "JavaScript Guide", "content": "Learn JavaScript basics"}
+
+    create_response1 = client.put("/api/note", json=note1_data)
+    assert create_response1.status_code == 200
+
+    create_response2 = client.put("/api/note", json=note2_data)
+    assert create_response2.status_code == 200
+
+    list_response = client.get("/api/notes", params={"page": 1, "page_size": 50})
+    assert list_response.status_code == 200
+    list_data = list_response.json()
+    assert len(list_data["notes"]) == 2
+    assert list_data["total"] == 2
+
+    titles = {note["title"] for note in list_data["notes"]}
+    assert "Python Tutorial" in titles
+    assert "JavaScript Guide" in titles
+
+    search_response = client.get("/api/notes", params={"page": 1, "page_size": 50, "query": "Python"})
+    assert search_response.status_code == 200
+    search_data = search_response.json()
+    assert len(search_data["notes"]) == 1
+    assert search_data["total"] == 1
+    assert search_data["notes"][0]["title"] == "Python Tutorial"
+
+    empty_query_response = client.get("/api/notes", params={"page": 1, "page_size": 50, "query": ""})
+    assert empty_query_response.status_code == 200
+    empty_query_data = empty_query_response.json()
+    assert len(empty_query_data["notes"]) == 2
+    assert empty_query_data["total"] == 2

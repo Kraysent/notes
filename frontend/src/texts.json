@@ -18,6 +18,9 @@
       "expand": "Expand sidebar",
       "collapse": "Collapse sidebar"
     }
+  },
+  "search": {
+    "placeholder": "Search notes..."
   }
 }
 

@@ -57,8 +57,8 @@ def get_app(app_settings: Settings | None = None, cors_origins: str | None = Non
     def update_title_endpoint(title_update: TitleUpdate) -> NoteResponse:
         return update_title(title_update, app_settings.database_path)
 
-    def list_notes_endpoint(page: int = 1, page_size: int = 50) -> NotesListResponse:
-        return list_notes(page, page_size, app_settings.database_path)
+    def list_notes_endpoint(page: int = 1, page_size: int = 50, query: str | None = None) -> NotesListResponse:
+        return list_notes(page, page_size, app_settings.database_path, query)
 
     def ping_endpoint() -> dict[str, str]:
         return {"status": "ok"}

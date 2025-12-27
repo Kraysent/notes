@@ -55,8 +55,15 @@ export interface NotesListResponse {
   page_size: number;
 }
 
-export async function listNotes(page: number = 1, pageSize: number = 50): Promise<NotesListResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/notes?page=${page}&page_size=${pageSize}`, {
+export async function listNotes(page: number = 1, pageSize: number = 50, query?: string): Promise<NotesListResponse> {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+  });
+  if (query) {
+    params.set('query', query);
+  }
+  const response = await fetch(`${API_BASE_URL}/api/notes?${params.toString()}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

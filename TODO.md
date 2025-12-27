@@ -1,15 +1,15 @@
 - Ability to tag notes
-- Search by note name
 - Search by tag (simple "contains")
-- Search by content
 - Support for images (only images that are necessary for the files should be there, also they should not be visible in the list of notes)
 - Move notes to trash and clean up trashed notes
 - Do not save on every keystroke, just every 0.5 sec
 - Ability to resize sidebar
 - Proper sidebar pagination
 - Hotkey for switching between notes
+- Ability to choose whether to search by title or content separately
 
 Editor:
+
 - Disable suggestions in the editor
 
 Markdown things:
