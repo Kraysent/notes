@@ -36,27 +36,27 @@ function NotesSidebar({ onNoteClick }: NotesSidebarProps) {
 
   if (loading) {
     return (
-      <div className="w-80 border-l border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
-        <div className="text-gray-500 dark:text-gray-400">Loading notes...</div>
+      <div className="w-80 border-l border-gray-700 bg-gray-900 p-4">
+        <div className="text-gray-400">Loading notes...</div>
       </div>
     )
   }
 
   return (
-    <div className="w-80 border-l border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex flex-col">
-      <div className="p-4 border-b border-gray-300 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Notes</h2>
+    <div className="w-80 border-l border-gray-700 bg-gray-900 flex flex-col">
+      <div className="p-4 border-b border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-100">Notes</h2>
       </div>
       <div className="flex-1 overflow-y-auto">
         {notes.length === 0 ? (
-          <div className="p-4 text-gray-500 dark:text-gray-400">No notes yet</div>
+          <div className="p-4 text-gray-400">No notes yet</div>
         ) : (
-          <div className="divide-y divide-gray-300 dark:divide-gray-700">
+          <div className="divide-y divide-gray-700">
             {notes.map((note) => (
               <button
                 key={note.title}
                 onClick={() => onNoteClick(note.title)}
-                className="w-full text-left p-4 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+                className="w-full text-left p-4 hover:bg-gray-800 transition-colors"
               >
                 <Text size={TextSize.Medium} color={TextColor.Primary} className="break-words mb-1">
                   {note.title}

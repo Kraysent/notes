@@ -28,8 +28,8 @@ function Text({ children, size = TextSize.Medium, color = TextColor.Primary, cla
   }
 
   const colorClasses = {
-    [TextColor.Primary]: 'text-gray-900 dark:text-gray-100',
-    [TextColor.Secondary]: 'text-gray-500 dark:text-gray-400',
+    [TextColor.Primary]: 'text-gray-100',
+    [TextColor.Secondary]: 'text-gray-400',
   }
 
   return (

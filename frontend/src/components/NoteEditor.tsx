@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Editor from '@monaco-editor/react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -16,27 +16,13 @@ interface RawEditorProps {
 }
 
 function RawEditor({ note, onNoteChange }: RawEditorProps) {
-  const [theme, setTheme] = useState<'vs' | 'vs-dark'>('vs-dark')
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: light)')
-    const updateTheme = (e: MediaQueryListEvent | MediaQueryList) => {
-      setTheme(e.matches ? 'vs' : 'vs-dark')
-    }
-    
-    updateTheme(mediaQuery)
-    mediaQuery.addEventListener('change', updateTheme)
-    
-    return () => mediaQuery.removeEventListener('change', updateTheme)
-  }, [])
-
   return (
     <Editor
       height="100%"
       defaultLanguage="plaintext"
       value={note}
       onChange={(value) => onNoteChange(value || '')}
-      theme={theme}
+      theme="vs-dark"
       options={{
         minimap: { enabled: false },
         fontSize: 16,
@@ -55,7 +41,7 @@ interface MarkdownViewProps {
 
 function MarkdownView({ note }: MarkdownViewProps) {
   return (
-    <div className="h-full overflow-auto p-6 bg-white dark:bg-[#1e1e1e] text-gray-900 dark:text-gray-100">
+    <div className="h-full overflow-auto p-6 bg-[#1e1e1e] text-gray-100">
       <div className="max-w-4xl mx-auto markdown-content">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}

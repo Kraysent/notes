@@ -59,7 +59,7 @@ function Header({ title, onTitleSubmit, viewMode, onViewModeChange, onNewNote, i
   }
 
   return (
-    <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur-sm flex items-center justify-between">
+    <div className="px-4 py-2 border-b border-gray-700 bg-[#1e1e1e]/95 backdrop-blur-sm flex items-center justify-between">
       {isEditing ? (
         <TextField
           value={editValue}

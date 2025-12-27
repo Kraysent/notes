@@ -43,16 +43,12 @@
   margin-bottom: 0.25em;
 }
 
-@media (prefers-color-scheme: dark) {
-  .markdown-content code {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
+.markdown-content code {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  .markdown-content pre {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
+.markdown-content pre {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .markdown-content pre code {
@@ -65,37 +61,19 @@
   margin-top: 0.75em;
   margin-bottom: 0.75em;
   padding-left: 1em;
-  border-left: 4px solid rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  .markdown-content blockquote {
-    border-left-color: rgba(255, 255, 255, 0.2);
-  }
+  border-left: 4px solid rgba(255, 255, 255, 0.2);
 }
 
 .markdown-content a {
-  color: #2563eb;
+  color: #60a5fa;
   text-decoration: underline;
-}
-
-@media (prefers-color-scheme: dark) {
-  .markdown-content a {
-    color: #60a5fa;
-  }
 }
 
 .markdown-content hr {
   margin-top: 1.5em;
   margin-bottom: 1.5em;
   border: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  .markdown-content hr {
-    border-top-color: rgba(255, 255, 255, 0.2);
-  }
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .markdown-content table {
@@ -109,25 +87,12 @@
 .markdown-content table th,
 .markdown-content table td {
   padding: 0.5em 1em;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  .markdown-content table th,
-  .markdown-content table td {
-    border-color: rgba(255, 255, 255, 0.2);
-  }
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .markdown-content table th {
   font-weight: 600;
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-@media (prefers-color-scheme: dark) {
-  .markdown-content table th {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .markdown-content input[type="checkbox"] {

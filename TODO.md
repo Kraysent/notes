@@ -9,6 +9,7 @@
 - Ability to resize sidebar
 - Proper sidebar pagination
 - Hotkey for switching between notes
+- Remember if the sidebar was collapsed
 
 Editor:
 - Disable suggestions in the editor
