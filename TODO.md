@@ -13,6 +13,9 @@
 - Hotkey for switching between raw and markdown
 - Hotkey for switching between notes
 
+Editor:
+- Disable suggestions in the editor
+
 Markdown things:
 
 - comments
@@ -34,3 +37,4 @@ More distant things to maybe design:
 - deduplication of note titles - maybe something similar to filesystem/note namespaces
 - UI/UX
 - note templates/copying with custom templating (jinja?)
+- ai generation/refinement
