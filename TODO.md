@@ -1,6 +1,5 @@
 - Ability to tag notes
 - Search by tag (simple "contains")
-- Support for images (only images that are necessary for the files should be there, also they should not be visible in the list of notes)
 - Do not save on every keystroke, just every 0.5 sec
 - Ability to resize sidebar
 - Proper sidebar pagination
@@ -10,10 +9,12 @@
 - Auto cleanup of removed notes
 - Proper error messages on the frontend
 - Dictate and maybe summarize/prompt on the dictated text with LLM
+- Ability to Ctrl + V an image (an cleanup of the image if it is removed from the note)
+- Remember the state of the view of the note (maybe in query parameter)
+- Save scroll state when switching from raw to markdown and vice versa
 
 Markdown things:
 
-- code copy button
 - diagrams? mermaid/drawio and stuff, ideally - inline
 - proper dots for enumerations
 - anchors in the html

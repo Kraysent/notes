@@ -5,10 +5,11 @@ import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism'
-import { MdOutlineAutorenew, MdCheck, MdClear } from 'react-icons/md'
+import { MdOutlineAutorenew, MdCheck, MdClear, MdContentCopy } from 'react-icons/md'
 import { ViewMode, SaveStatus } from '../types'
 import { saveNote } from '../api'
 import settings from '../settings.json'
+import Button from './core/Button'
 
 interface RawEditorProps {
   note: string
@@ -19,7 +20,7 @@ function RawEditor({ note, onNoteChange }: RawEditorProps) {
   return (
     <Editor
       height="100%"
-      defaultLanguage="plaintext"
+      defaultLanguage="markdown"
       value={note}
       onChange={(value) => onNoteChange(value || '')}
       theme="vs-dark"
@@ -41,6 +42,40 @@ function RawEditor({ note, onNoteChange }: RawEditorProps) {
   )
 }
 
+interface CodeBlockProps {
+  language: string
+  children: string
+  [key: string]: any
+}
+
+function CodeBlock({ language, children, ...props }: CodeBlockProps) {
+  const [copied, setCopied] = useState(false)
+  const codeContent = String(children).replace(/\n$/, '')
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(codeContent)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy code:', error)
+    }
+  }
+
+  return (
+    <div className="relative group">
+      <SyntaxHighlighter style={dracula} PreTag="div" language={language} {...props}>
+        {codeContent}
+      </SyntaxHighlighter>
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button onClick={handleCopy}>
+          {copied ? <MdCheck /> : <MdContentCopy />}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 interface MarkdownViewProps {
   note: string
 }
@@ -57,9 +92,9 @@ function MarkdownView({ note }: MarkdownViewProps) {
               const match = /language-(\w+)/.exec(className || '')
 
               return !inline && match ? (
-                <SyntaxHighlighter style={dracula} PreTag="div" language={match[1]} {...props}>
-                  {String(children).replace(/\n$/, '')}
-                </SyntaxHighlighter>
+                <CodeBlock language={match[1]} {...props}>
+                  {children}
+                </CodeBlock>
               ) : (
                 <code className={className} {...props}>
                   {children}
