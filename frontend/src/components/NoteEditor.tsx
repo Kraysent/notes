@@ -101,6 +101,13 @@ function MarkdownView({ note }: MarkdownViewProps) {
                 </code>
               )
             },
+            a({ node, href, children, ...props }: any) {
+              return (
+                <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+                  {children}
+                </a>
+              )
+            },
           }}
         >
           {note}

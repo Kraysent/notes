@@ -16,7 +16,6 @@
 Markdown things:
 
 - diagrams? mermaid/drawio and stuff, ideally - inline
-- proper dots for enumerations
 - anchors in the html
 - clickable checklist items
 
