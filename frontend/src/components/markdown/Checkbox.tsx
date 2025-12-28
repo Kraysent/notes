@@ -1,7 +1,7 @@
 export interface CheckboxProps {
   node: unknown;
   checked: boolean;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (node: unknown) => void;
 }
 
 export function Checkbox(props: CheckboxProps) {
@@ -9,7 +9,9 @@ export function Checkbox(props: CheckboxProps) {
     <input
       type="checkbox"
       defaultChecked={props.checked}
-      onChange={props.onChange}
+      onChange={() => {
+        props.onChange?.(props.node);
+      }}
       className="mr-2"
     />
   );

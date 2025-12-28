@@ -57,14 +57,57 @@ export interface MarkdownViewProps {
   note: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function gatherPosition(node: any) {
+  return {
+    [`data-startline`]: node.position.start.line,
+    [`data-startcolumn`]: node.position.start.column,
+    [`data-startoffset`]: node.position.start.offset,
+    [`data-endline`]: node.position.end.line,
+    [`data-endcolumn`]: node.position.end.column,
+    [`data-endoffset`]: node.position.end.offset,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function heading(state: any, node: any) {
+  const result = {
+    type: "element",
+    tagName: "h" + node.depth,
+    properties: { ...gatherPosition(node) },
+    children: state.all(node),
+  };
+  state.patch(node, result);
+  return state.applyData(node, result);
+}
+
 function MarkdownView(props: MarkdownViewProps) {
+  console.log(
+    JSON.stringify(
+      unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkMath)
+        .parse("- [ ] tick")
+    )
+  );
+
+  function onClick(node: unknown): void {
+    console.log("header clicked", JSON.stringify(node));
+  }
+
   const processor = useMemo(
     () =>
       unified()
         .use(remarkParse)
         .use(remarkGfm)
         .use(remarkMath)
-        .use(remarkRehype, { allowDangerousHtml: true })
+        .use(remarkRehype, {
+          allowDangerousHtml: false,
+          handlers: {
+            heading: heading,
+          },
+        })
         .use(rehypeRaw)
         .use(rehypeKatex)
         .use(rehypeReact, {
@@ -73,22 +116,23 @@ function MarkdownView(props: MarkdownViewProps) {
           jsxs,
           components: {
             h1(props: HeaderProps) {
-              return <H1 {...props} />;
+              console.log(props);
+              return <H1 {...props} onClick={onClick} />;
             },
             h2(props: HeaderProps) {
-              return <H2 {...props} />;
+              return <H2 {...props} onClick={onClick} />;
             },
             h3(props: HeaderProps) {
-              return <H3 {...props} />;
+              return <H3 {...props} onClick={onClick} />;
             },
             h4(props: HeaderProps) {
-              return <H4 {...props} />;
+              return <H4 {...props} onClick={onClick} />;
             },
             h5(props: HeaderProps) {
-              return <H5 {...props} />;
+              return <H5 {...props} onClick={onClick} />;
             },
             h6(props: HeaderProps) {
-              return <H6 {...props} />;
+              return <H6 {...props} onClick={onClick} />;
             },
             code(props: CodeProps) {
               return <Code {...props} />;
@@ -109,14 +153,7 @@ function MarkdownView(props: MarkdownViewProps) {
               return <Li {...props} />;
             },
             input(props: CheckboxProps) {
-              return (
-                <Checkbox
-                  {...props}
-                  onChange={(e) => {
-                    console.log("Checkbox changed", e);
-                  }}
-                />
-              );
+              return <Checkbox {...props} />;
             },
           },
         }),
