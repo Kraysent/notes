@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import Text, { TextSize, type TextSizeType } from "../core/Text";
 import { StringSlice } from "../../utils";
-import settings from "../../settings.json";
+import { useTooltip } from "../../hooks/useTooltip";
 
 export interface HeaderProps {
   children: ReactNode;
@@ -20,50 +20,17 @@ interface HeaderComponentProps extends HeaderProps {
 
 function HeaderComponent(props: HeaderComponentProps) {
   const { onHover, size, ...restProps } = props;
-  const [tooltipText, setTooltipText] = useState<string | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+  const { tooltipText, handleMouseEnter, handleMouseLeave } = useTooltip({
+    onHover,
+    positionData: {
+      "data-startline": props["data-startline"],
+      "data-startcolumn": props["data-startcolumn"],
+      "data-startoffset": props["data-startoffset"],
+      "data-endline": props["data-endline"],
+      "data-endcolumn": props["data-endcolumn"],
+      "data-endoffset": props["data-endoffset"],
+    },
   });
-
-  function handleMouseEnter() {
-    if (!onHover) {
-      return;
-    }
-
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      const node = {
-        startPos: {
-          line: props["data-startline"],
-          column: props["data-startcolumn"],
-          offset: props["data-startoffset"],
-        },
-        endPos: {
-          line: props["data-endline"],
-          column: props["data-endcolumn"],
-          offset: props["data-endoffset"],
-        },
-      };
-
-      const text = onHover(node);
-      setTooltipText(text);
-    }, settings.headerTooltipDelayMs);
-  }
-
-  function handleMouseLeave() {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    setTooltipText(null);
-  }
 
   return (
     <div className="relative group">

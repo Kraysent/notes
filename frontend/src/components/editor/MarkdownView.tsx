@@ -22,10 +22,10 @@ import {
   type ParagraphProps,
 } from "../markdown/Text";
 import { Link, type LinkProps } from "../markdown/Link";
-import { Code, type CodeProps } from "../markdown/Code";
-import { Pre, type PreProps } from "../markdown/Pre";
-import { Ul, Ol, Li, type ListProps } from "../markdown/List";
-import { Checkbox, type CheckboxProps } from "../markdown/Checkbox";
+import { Code } from "../markdown/Code";
+import { Pre } from "../markdown/Pre";
+import { Ul, Ol, Li } from "../markdown/List";
+import { Checkbox } from "../markdown/Checkbox";
 import { gatherPosition, getStringSlice, type StringSlice } from "../../utils";
 
 export interface MarkdownViewProps {
@@ -68,6 +68,18 @@ function paragraph(state: any, node: any) {
   return state.applyData(node, result);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function link(state: any, node: any) {
+  const result = {
+    type: "element",
+    tagName: "a",
+    properties: { ...gatherPosition(node) },
+    children: state.all(node),
+  };
+  state.patch(node, result);
+  return state.applyData(node, result);
+}
+
 function MarkdownView(props: MarkdownViewProps) {
   function getOriginalCode(node: StringSlice): string {
     try {
@@ -90,6 +102,7 @@ function MarkdownView(props: MarkdownViewProps) {
             heading: heading,
             text: text,
             paragraph: paragraph,
+            link: link,
           },
         })
         .use(rehypeRaw)
@@ -120,30 +133,18 @@ function MarkdownView(props: MarkdownViewProps) {
             p(props: ParagraphProps) {
               return <Paragraph {...props} onHover={getOriginalCode} />;
             },
-            code(props: CodeProps) {
-              return <Code {...props} />;
-            },
-            pre(props: PreProps) {
-              return <Pre {...props} />;
-            },
+            code: Code,
+            pre: Pre,
             a(props: LinkProps) {
-              return <Link {...props} />;
+              return <Link {...props} onHover={getOriginalCode} />;
             },
-            ul(props: ListProps) {
-              return <Ul {...props} />;
-            },
-            ol(props: ListProps) {
-              return <Ol {...props} />;
-            },
-            li(props: ListProps) {
-              return <Li {...props} />;
-            },
-            input(props: CheckboxProps) {
-              return <Checkbox {...props} />;
-            },
+            ul: Ul,
+            ol: Ol,
+            li: Li,
+            input: Checkbox,
           },
         }),
-    [],
+    []
   );
 
   const content = useMemo(() => {
