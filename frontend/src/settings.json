@@ -1,4 +1,5 @@
 {
   "autosaveFrequencyMs": 2000,
-  "collapseSidebarByDefault": true
+  "collapseSidebarByDefault": true,
+  "headerTooltipDelayMs": 2000
 }

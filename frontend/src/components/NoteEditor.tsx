@@ -21,6 +21,7 @@ import { Code, type CodeProps } from "./markdown/Code";
 import { Pre, type PreProps } from "./markdown/Pre";
 import { Ul, Ol, Li, type ListProps } from "./markdown/List";
 import { Checkbox, type CheckboxProps } from "./markdown/Checkbox";
+import type { NodeInfo } from "../utils";
 
 export interface RawEditorProps {
   note: string;
@@ -82,18 +83,19 @@ function heading(state: any, node: any) {
 }
 
 function MarkdownView(props: MarkdownViewProps) {
-  console.log(
-    JSON.stringify(
-      unified()
-        .use(remarkParse)
-        .use(remarkGfm)
-        .use(remarkMath)
-        .parse("- [ ] tick")
-    )
-  );
-
-  function onClick(node: unknown): void {
-    console.log("header clicked", JSON.stringify(node));
+  function getOriginalCode(node: NodeInfo): string {
+    const note =
+      typeof props !== "undefined" && typeof props.note === "string"
+        ? props.note
+        : "";
+    const text =
+      typeof node === "object" &&
+      node.startPos &&
+      node.endPos &&
+      typeof note === "string"
+        ? note.slice(node.startPos.offset, node.endPos.offset)
+        : null;
+    return text !== null ? text : "[could not determine snippet]";
   }
 
   const processor = useMemo(
@@ -116,23 +118,22 @@ function MarkdownView(props: MarkdownViewProps) {
           jsxs,
           components: {
             h1(props: HeaderProps) {
-              console.log(props);
-              return <H1 {...props} onClick={onClick} />;
+              return <H1 {...props} onHover={getOriginalCode} />;
             },
             h2(props: HeaderProps) {
-              return <H2 {...props} onClick={onClick} />;
+              return <H2 {...props} onHover={getOriginalCode} />;
             },
             h3(props: HeaderProps) {
-              return <H3 {...props} onClick={onClick} />;
+              return <H3 {...props} onHover={getOriginalCode} />;
             },
             h4(props: HeaderProps) {
-              return <H4 {...props} onClick={onClick} />;
+              return <H4 {...props} onHover={getOriginalCode} />;
             },
             h5(props: HeaderProps) {
-              return <H5 {...props} onClick={onClick} />;
+              return <H5 {...props} onHover={getOriginalCode} />;
             },
             h6(props: HeaderProps) {
-              return <H6 {...props} onClick={onClick} />;
+              return <H6 {...props} onHover={getOriginalCode} />;
             },
             code(props: CodeProps) {
               return <Code {...props} />;
