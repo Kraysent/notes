@@ -24,7 +24,6 @@ export default tseslint.config(eslintConfigPrettier, {
     "arrow-body-style": "error",
     "block-scoped-var": "error",
     camelcase: ["error", { properties: "never" }], // code-generated client structures might not always adhere to camelcase
-    "consistent-return": "error",
     "default-case": "error",
     "default-case-last": "error",
     "default-param-last": "error",

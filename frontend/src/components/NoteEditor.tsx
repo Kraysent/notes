@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import type { ReactNode } from "react";
 import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -15,6 +16,21 @@ import { Link } from "./markdown/Link";
 import { Code } from "./markdown/Code";
 import { Pre } from "./markdown/Pre";
 import { Ul, Ol, Li } from "./markdown/List";
+
+interface ComponentProps {
+  node?: unknown;
+  children?: ReactNode;
+  [key: string]: unknown;
+}
+
+interface CodeComponentProps extends ComponentProps {
+  inline?: boolean;
+  className?: string;
+}
+
+interface LinkComponentProps extends ComponentProps {
+  href?: string;
+}
 
 interface RawEditorProps {
   note: string;
@@ -58,52 +74,86 @@ function MarkdownView({ note }: MarkdownViewProps) {
         <ReactMarkdown
           remarkPlugins={[remarkGfm, remarkMath]}
           rehypePlugins={[rehypeRaw, rehypeKatex]}
-          components={{
-            h1({ node, children, ...props }: any) {
-              return <H1 {...props}>{children}</H1>;
-            },
-            h2({ node, children, ...props }: any) {
-              return <H2 {...props}>{children}</H2>;
-            },
-            h3({ node, children, ...props }: any) {
-              return <H3 {...props}>{children}</H3>;
-            },
-            h4({ node, children, ...props }: any) {
-              return <H4 {...props}>{children}</H4>;
-            },
-            h5({ node, children, ...props }: any) {
-              return <H5 {...props}>{children}</H5>;
-            },
-            h6({ node, children, ...props }: any) {
-              return <H6 {...props}>{children}</H6>;
-            },
-            code({ node, inline, className, children, ...props }: any) {
-              return (
-                <Code inline={inline} className={className} {...props}>
-                  {children}
-                </Code>
-              );
-            },
-            pre({ node, children, ...props }: any) {
-              return <Pre {...props}>{children}</Pre>;
-            },
-            a({ node, href, children, ...props }: any) {
-              return (
-                <Link href={href} {...props}>
-                  {children}
-                </Link>
-              );
-            },
-            ul({ node, children, ...props }: any) {
-              return <Ul {...props}>{children}</Ul>;
-            },
-            ol({ node, children, ...props }: any) {
-              return <Ol {...props}>{children}</Ol>;
-            },
-            li({ node, children, ...props }: any) {
-              return <Li {...props}>{children}</Li>;
-            },
-          }}
+          components={
+            {
+              h1({ node, children, ...props }: ComponentProps) {
+                return (
+                  <H1 {...(props as Record<string, unknown>)}>{children}</H1>
+                );
+              },
+              h2({ node, children, ...props }: ComponentProps) {
+                return (
+                  <H2 {...(props as Record<string, unknown>)}>{children}</H2>
+                );
+              },
+              h3({ node, children, ...props }: ComponentProps) {
+                return (
+                  <H3 {...(props as Record<string, unknown>)}>{children}</H3>
+                );
+              },
+              h4({ node, children, ...props }: ComponentProps) {
+                return (
+                  <H4 {...(props as Record<string, unknown>)}>{children}</H4>
+                );
+              },
+              h5({ node, children, ...props }: ComponentProps) {
+                return (
+                  <H5 {...(props as Record<string, unknown>)}>{children}</H5>
+                );
+              },
+              h6({ node, children, ...props }: ComponentProps) {
+                return (
+                  <H6 {...(props as Record<string, unknown>)}>{children}</H6>
+                );
+              },
+              code({
+                node,
+                inline,
+                className,
+                children,
+                ...props
+              }: CodeComponentProps) {
+                const childrenString =
+                  typeof children === "string" ? children : String(children);
+                return (
+                  <Code
+                    inline={inline}
+                    className={className}
+                    {...(props as Record<string, unknown>)}
+                  >
+                    {childrenString}
+                  </Code>
+                );
+              },
+              pre({ node, children, ...props }: ComponentProps) {
+                return (
+                  <Pre {...(props as Record<string, unknown>)}>{children}</Pre>
+                );
+              },
+              a({ node, href, children, ...props }: LinkComponentProps) {
+                return (
+                  <Link href={href} {...(props as Record<string, unknown>)}>
+                    {children}
+                  </Link>
+                );
+              },
+              ul({ node, children, ...props }: ComponentProps) {
+                return (
+                  <Ul {...(props as Record<string, unknown>)}>{children}</Ul>
+                );
+              },
+              ol({ node, children, ...props }: ComponentProps) {
+                return (
+                  <Ol {...(props as Record<string, unknown>)}>{children}</Ol>
+                );
+              },
+              li({ node, children, ...props }: ComponentProps) {
+                return (
+                  <Li {...(props as Record<string, unknown>)}>{children}</Li>
+                );
+              },
+            } as Record<string, unknown>
+          }
         >
           {note}
         </ReactMarkdown>
@@ -145,37 +195,36 @@ function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
     setSaveStatus(SaveStatus.Unsaved);
 
     saveTimeoutRef.current = setTimeout(() => {
-      if (lastSavedContentRef.current === note) {
-        return;
+      if (lastSavedContentRef.current !== note) {
+        setSaveStatus(SaveStatus.Saving);
+        saveNote(title, note)
+          .then(() => {
+            lastSavedContentRef.current = note;
+            setSaveStatus(SaveStatus.Saved);
+          })
+          .catch((error) => {
+            console.error("Failed to autosave note:", error);
+            setSaveStatus(SaveStatus.Unsaved);
+          });
       }
-
-      setSaveStatus(SaveStatus.Saving);
-      saveNote(title, note)
-        .then(() => {
-          lastSavedContentRef.current = note;
-          setSaveStatus(SaveStatus.Saved);
-        })
-        .catch((error) => {
-          console.error("Failed to autosave note:", error);
-          setSaveStatus(SaveStatus.Unsaved);
-        });
     }, settings.autosaveFrequencyMs);
 
     return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
+      const timeoutId = saveTimeoutRef.current;
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
       }
     };
   }, [note, title]);
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
+    function handleBeforeUnload() {
       if (title && title.trim() && lastSavedContentRef.current !== note) {
         saveNote(title, note).catch((error) => {
           console.error("Failed to save note on page unload:", error);
         });
       }
-    };
+    }
 
     window.addEventListener("beforeunload", handleBeforeUnload);
 
@@ -192,7 +241,7 @@ function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
     };
   }, [note, title]);
 
-  const getStatusIcon = () => {
+  function getStatusIcon() {
     switch (saveStatus) {
       case SaveStatus.Saved:
         return <MdCheck />;
@@ -200,8 +249,10 @@ function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
         return <MdOutlineAutorenew />;
       case SaveStatus.Unsaved:
         return <MdClear />;
+      default:
+        return <MdClear />;
     }
-  };
+  }
 
   return (
     <div className="flex-1 overflow-hidden relative">
