@@ -26,7 +26,7 @@ import { Code, type CodeProps } from "../markdown/Code";
 import { Pre, type PreProps } from "../markdown/Pre";
 import { Ul, Ol, Li, type ListProps } from "../markdown/List";
 import { Checkbox, type CheckboxProps } from "../markdown/Checkbox";
-import { gatherPosition, getOriginalCode, type NodeInfo } from "../../utils";
+import { gatherPosition, getStringSlice, type StringSlice } from "../../utils";
 
 export interface MarkdownViewProps {
   note: string;
@@ -69,9 +69,9 @@ function paragraph(state: any, node: any) {
 }
 
 function MarkdownView(props: MarkdownViewProps) {
-  function getOriginalCodeForNode(node: NodeInfo): string {
+  function getOriginalCode(node: StringSlice): string {
     try {
-      return getOriginalCode(node, props.note);
+      return getStringSlice(node, props.note);
     } catch (error) {
       console.error("Error getting original code for node:", error);
       return "[could not determine snippet]";
@@ -100,25 +100,25 @@ function MarkdownView(props: MarkdownViewProps) {
           jsxs,
           components: {
             h1(props: HeaderProps) {
-              return <H1 {...props} onHover={getOriginalCodeForNode} />;
+              return <H1 {...props} onHover={getOriginalCode} />;
             },
             h2(props: HeaderProps) {
-              return <H2 {...props} onHover={getOriginalCodeForNode} />;
+              return <H2 {...props} onHover={getOriginalCode} />;
             },
             h3(props: HeaderProps) {
-              return <H3 {...props} onHover={getOriginalCodeForNode} />;
+              return <H3 {...props} onHover={getOriginalCode} />;
             },
             h4(props: HeaderProps) {
-              return <H4 {...props} onHover={getOriginalCodeForNode} />;
+              return <H4 {...props} onHover={getOriginalCode} />;
             },
             h5(props: HeaderProps) {
-              return <H5 {...props} onHover={getOriginalCodeForNode} />;
+              return <H5 {...props} onHover={getOriginalCode} />;
             },
             h6(props: HeaderProps) {
-              return <H6 {...props} onHover={getOriginalCodeForNode} />;
+              return <H6 {...props} onHover={getOriginalCode} />;
             },
             p(props: ParagraphProps) {
-              return <Paragraph {...props} onHover={getOriginalCodeForNode} />;
+              return <Paragraph {...props} onHover={getOriginalCode} />;
             },
             code(props: CodeProps) {
               return <Code {...props} />;

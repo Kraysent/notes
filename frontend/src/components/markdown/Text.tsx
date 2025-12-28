@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, type ReactNode } from "react";
 import Text, { TextSize, type TextSizeType } from "../core/Text";
-import { NodeInfo } from "../../utils";
+import { StringSlice } from "../../utils";
 import settings from "../../settings.json";
 
 export interface HeaderProps {
@@ -11,7 +11,7 @@ export interface HeaderProps {
   "data-endline": number;
   "data-endcolumn": number;
   "data-endoffset": number;
-  onHover?: (node: NodeInfo) => string;
+  onHover?: (node: StringSlice) => string;
 }
 
 interface HeaderComponentProps extends HeaderProps {
@@ -116,7 +116,7 @@ export interface ParagraphProps {
   "data-endline": number;
   "data-endcolumn": number;
   "data-endoffset": number;
-  onHover?: (node: NodeInfo) => string;
+  onHover?: (node: StringSlice) => string;
 }
 
 export function Paragraph(props: ParagraphProps) {

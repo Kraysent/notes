@@ -1,19 +1,3 @@
-export interface Position {
-  line: number;
-  column: number;
-  offset: number;
-}
-
-export class NodeInfo {
-  startPos: Position;
-  endPos: Position;
-
-  constructor(startPos: Position, endPos: Position) {
-    this.startPos = startPos;
-    this.endPos = endPos;
-  }
-}
-
 // this function needs to return a flat kv set since
 // they are encoded as custom fields in the DOM directly which does
 // not support nested objects and converts them into [Object object]
@@ -32,30 +16,46 @@ export function gatherPosition(node: any) {
   };
 }
 
-export function getOriginalCode(node: NodeInfo, note: string): string {
-  if (node.startPos.offset < 0 || node.endPos.offset < 0) {
+export interface Position {
+  line: number;
+  column: number;
+  offset: number;
+}
+
+export class StringSlice {
+  startPos: Position;
+  endPos: Position;
+
+  constructor(startPos: Position, endPos: Position) {
+    this.startPos = startPos;
+    this.endPos = endPos;
+  }
+}
+
+export function getStringSlice(slice: StringSlice, str: string): string {
+  if (slice.startPos.offset < 0 || slice.endPos.offset < 0) {
     throw new Error(
-      `Node position offsets cannot be negative (start: ${node.startPos.offset}, end: ${node.endPos.offset})`,
+      `Node position offsets cannot be negative (start: ${slice.startPos.offset}, end: ${slice.endPos.offset})`
     );
   }
 
-  if (node.startPos.offset > node.endPos.offset) {
+  if (slice.startPos.offset > slice.endPos.offset) {
     throw new Error(
-      `Start offset (${node.startPos.offset}) cannot be greater than end offset (${node.endPos.offset})`,
+      `Start offset (${slice.startPos.offset}) cannot be greater than end offset (${slice.endPos.offset})`
     );
   }
 
-  if (node.startPos.offset >= note.length) {
+  if (slice.startPos.offset >= str.length) {
     throw new Error(
-      `Node position start offset (${node.startPos.offset}) is out of bounds for the note (note length: ${note.length})`,
+      `Node position start offset (${slice.startPos.offset}) is out of bounds for the note (note length: ${str.length})`
     );
   }
 
-  if (node.endPos.offset > note.length) {
+  if (slice.endPos.offset > str.length) {
     throw new Error(
-      `Node position end offset (${node.endPos.offset}) is out of bounds for the note (note length: ${note.length})`,
+      `Node position end offset (${slice.endPos.offset}) is out of bounds for the note (note length: ${str.length})`
     );
   }
 
-  return note.slice(node.startPos.offset, node.endPos.offset);
+  return str.slice(slice.startPos.offset, slice.endPos.offset);
 }
