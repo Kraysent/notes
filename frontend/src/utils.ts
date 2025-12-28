@@ -8,4 +8,3 @@ export function generateId(obj: unknown): string {
   }
   return `checkbox-${Math.abs(hash).toString(36)}`;
 }
-

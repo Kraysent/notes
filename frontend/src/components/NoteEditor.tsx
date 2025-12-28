@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import type { ReactNode } from "react";
 import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -11,40 +10,25 @@ import { MdOutlineAutorenew, MdCheck, MdClear } from "react-icons/md";
 import { ViewMode, SaveStatus } from "../types";
 import { saveNote } from "../api";
 import settings from "../settings.json";
-import { H1, H2, H3, H4, H5, H6 } from "./markdown/Text";
-import { Link } from "./markdown/Link";
-import { Code } from "./markdown/Code";
-import { Pre } from "./markdown/Pre";
-import { Ul, Ol, Li } from "./markdown/List";
+import { H1, H2, H3, H4, H5, H6, type HeaderProps } from "./markdown/Text";
+import { Link, type LinkProps } from "./markdown/Link";
+import { Code, type CodeProps } from "./markdown/Code";
+import { Pre, type PreProps } from "./markdown/Pre";
+import { Ul, Ol, Li, type ListProps } from "./markdown/List";
 import { Checkbox, type CheckboxProps } from "./markdown/Checkbox";
 
-interface ComponentProps {
-  node?: unknown;
-  children?: ReactNode;
-  [key: string]: unknown;
-}
-
-interface CodeComponentProps extends ComponentProps {
-  inline?: boolean;
-  className?: string;
-}
-
-interface LinkComponentProps extends ComponentProps {
-  href?: string;
-}
-
-interface RawEditorProps {
+export interface RawEditorProps {
   note: string;
   onNoteChange: (note: string) => void;
 }
 
-function RawEditor({ note, onNoteChange }: RawEditorProps) {
+function RawEditor(props: RawEditorProps) {
   return (
     <Editor
       height="100%"
       defaultLanguage="markdown"
-      value={note}
-      onChange={(value) => onNoteChange(value || "")}
+      value={props.note}
+      onChange={(value) => props.onNoteChange(value || "")}
       theme="vs-dark"
       options={{
         minimap: { enabled: false },
@@ -64,11 +48,11 @@ function RawEditor({ note, onNoteChange }: RawEditorProps) {
   );
 }
 
-interface MarkdownViewProps {
+export interface MarkdownViewProps {
   note: string;
 }
 
-function MarkdownView({ note }: MarkdownViewProps) {
+function MarkdownView(props: MarkdownViewProps) {
   return (
     <div className="h-full overflow-auto p-6 bg-[#1e1e1e] text-gray-100">
       <div className="max-w-4xl mx-auto markdown-content">
@@ -77,81 +61,57 @@ function MarkdownView({ note }: MarkdownViewProps) {
           rehypePlugins={[rehypeRaw, rehypeKatex]}
           components={
             {
-              h1({ node, children, ...props }: ComponentProps) {
-                return (
-                  <H1 {...(props as Record<string, unknown>)}>{children}</H1>
-                );
+              h1(props: HeaderProps) {
+                return <H1 {...props}>{props.children}</H1>;
               },
-              h2({ node, children, ...props }: ComponentProps) {
-                return (
-                  <H2 {...(props as Record<string, unknown>)}>{children}</H2>
-                );
+              h2(props: HeaderProps) {
+                return <H2 {...props}>{props.children}</H2>;
               },
-              h3({ node, children, ...props }: ComponentProps) {
-                return (
-                  <H3 {...(props as Record<string, unknown>)}>{children}</H3>
-                );
+              h3(props: HeaderProps) {
+                return <H3 {...props}>{props.children}</H3>;
               },
-              h4({ node, children, ...props }: ComponentProps) {
-                return (
-                  <H4 {...(props as Record<string, unknown>)}>{children}</H4>
-                );
+              h4(props: HeaderProps) {
+                return <H4 {...props}>{props.children}</H4>;
               },
-              h5({ node, children, ...props }: ComponentProps) {
-                return (
-                  <H5 {...(props as Record<string, unknown>)}>{children}</H5>
-                );
+              h5(props: HeaderProps) {
+                return <H5 {...props}>{props.children}</H5>;
               },
-              h6({ node, children, ...props }: ComponentProps) {
-                return (
-                  <H6 {...(props as Record<string, unknown>)}>{children}</H6>
-                );
+              h6(props: HeaderProps) {
+                return <H6 {...props}>{props.children}</H6>;
               },
-              code({
-                node,
-                inline,
-                className,
-                children,
-                ...props
-              }: CodeComponentProps) {
+              code(props: CodeProps) {
                 const childrenString =
-                  typeof children === "string" ? children : String(children);
+                  typeof props.children === "string"
+                    ? props.children
+                    : String(props.children);
                 return (
                   <Code
-                    inline={inline}
-                    className={className}
-                    {...(props as Record<string, unknown>)}
+                    inline={props.inline}
+                    className={props.className}
+                    {...props}
                   >
                     {childrenString}
                   </Code>
                 );
               },
-              pre({ node, children, ...props }: ComponentProps) {
-                return (
-                  <Pre {...(props as Record<string, unknown>)}>{children}</Pre>
-                );
+              pre(props: PreProps) {
+                return <Pre {...props}>{props.children}</Pre>;
               },
-              a({ node, href, children, ...props }: LinkComponentProps) {
+              a(props: LinkProps) {
                 return (
-                  <Link href={href} {...(props as Record<string, unknown>)}>
-                    {children}
+                  <Link href={props.href} {...props}>
+                    {props.children}
                   </Link>
                 );
               },
-              ul({ node, children, ...props }: ComponentProps) {
-                return (
-                  <Ul {...(props as Record<string, unknown>)}>{children}</Ul>
-                );
+              ul(props: ListProps) {
+                return <Ul {...props}>{props.children}</Ul>;
               },
-              ol({ node, children, ...props }: ComponentProps) {
-                return (
-                  <Ol {...(props as Record<string, unknown>)}>{children}</Ol>
-                );
+              ol(props: ListProps) {
+                return <Ol {...props}>{props.children}</Ol>;
               },
-              li({ node, children, ...props }: ComponentProps) {
-                return (
-                  <Li {...(props as Record<string, unknown>)}>{children}</Li>
-                );
+              li(props: ListProps) {
+                return <Li {...props}>{props.children}</Li>;
               },
               input(props: CheckboxProps) {
                 return (
@@ -166,27 +126,27 @@ function MarkdownView({ note }: MarkdownViewProps) {
             } as Record<string, unknown>
           }
         >
-          {note}
+          {props.note}
         </ReactMarkdown>
       </div>
     </div>
   );
 }
 
-interface NoteEditorProps {
+export interface NoteEditorProps {
   note: string;
   onNoteChange: (note: string) => void;
   viewMode: ViewMode;
   title: string;
 }
 
-function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
+function NoteEditor(props: NoteEditorProps) {
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastSavedContentRef = useRef<string>(note);
+  const lastSavedContentRef = useRef<string>(props.note);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>(SaveStatus.Saved);
 
   useEffect(() => {
-    if (!title || !title.trim()) {
+    if (!props.title || !props.title.trim()) {
       setSaveStatus(SaveStatus.Unsaved);
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
@@ -198,7 +158,7 @@ function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
       clearTimeout(saveTimeoutRef.current);
     }
 
-    if (lastSavedContentRef.current === note) {
+    if (lastSavedContentRef.current === props.note) {
       setSaveStatus(SaveStatus.Saved);
       return;
     }
@@ -206,11 +166,11 @@ function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
     setSaveStatus(SaveStatus.Unsaved);
 
     saveTimeoutRef.current = setTimeout(() => {
-      if (lastSavedContentRef.current !== note) {
+      if (lastSavedContentRef.current !== props.note) {
         setSaveStatus(SaveStatus.Saving);
-        saveNote(title, note)
+        saveNote(props.title, props.note)
           .then(() => {
-            lastSavedContentRef.current = note;
+            lastSavedContentRef.current = props.note;
             setSaveStatus(SaveStatus.Saved);
           })
           .catch((error) => {
@@ -226,12 +186,16 @@ function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
         clearTimeout(timeoutId);
       }
     };
-  }, [note, title]);
+  }, [props.note, props.title]);
 
   useEffect(() => {
     function handleBeforeUnload() {
-      if (title && title.trim() && lastSavedContentRef.current !== note) {
-        saveNote(title, note).catch((error) => {
+      if (
+        props.title &&
+        props.title.trim() &&
+        lastSavedContentRef.current !== props.note
+      ) {
+        saveNote(props.title, props.note).catch((error) => {
           console.error("Failed to save note on page unload:", error);
         });
       }
@@ -244,13 +208,17 @@ function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
-      if (title && title.trim() && lastSavedContentRef.current !== note) {
-        saveNote(title, note).catch((error) => {
+      if (
+        props.title &&
+        props.title.trim() &&
+        lastSavedContentRef.current !== props.note
+      ) {
+        saveNote(props.title, props.note).catch((error) => {
           console.error("Failed to save note on unmount:", error);
         });
       }
     };
-  }, [note, title]);
+  }, [props.note, props.title]);
 
   function getStatusIcon() {
     switch (saveStatus) {
@@ -268,10 +236,10 @@ function NoteEditor({ note, onNoteChange, viewMode, title }: NoteEditorProps) {
   return (
     <div className="flex-1 overflow-hidden relative">
       <div className="absolute top-4 right-4 z-10">{getStatusIcon()}</div>
-      {viewMode === ViewMode.Raw ? (
-        <RawEditor note={note} onNoteChange={onNoteChange} />
+      {props.viewMode === ViewMode.Raw ? (
+        <RawEditor note={props.note} onNoteChange={props.onNoteChange} />
       ) : (
-        <MarkdownView note={note} />
+        <MarkdownView note={props.note} />
       )}
     </div>
   );

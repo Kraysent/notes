@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { isValidElement } from "react";
 
-interface ListProps {
+export interface ListProps {
   children: ReactNode;
   ordered?: boolean;
   [key: string]: unknown;
@@ -34,34 +34,34 @@ function hasCheckbox(children: ReactNode): boolean {
   return false;
 }
 
-export function Ul({ children, ...props }: ListProps) {
-  const isChecklist = hasCheckbox(children);
+export function Ul(props: ListProps) {
+  const isChecklist = hasCheckbox(props.children);
   const className = isChecklist
     ? "mt-3 mb-3 pl-[1.625em] list-none"
     : "mt-3 mb-3 pl-[1.625em] list-disc";
 
   return (
     <ul className={className} {...props}>
-      {children}
+      {props.children}
     </ul>
   );
 }
 
-export function Li({ children, ...props }: ListProps) {
-  const isChecklistItem = hasCheckbox(children);
+export function Li(props: ListProps) {
+  const isChecklistItem = hasCheckbox(props.children);
   const className = isChecklistItem ? "mt-1 mb-1 list-none" : "mt-1 mb-1";
 
   return (
     <li className={className} {...props}>
-      {children}
+      {props.children}
     </li>
   );
 }
 
-export function Ol({ children, ...props }: ListProps) {
+export function Ol(props: ListProps) {
   return (
     <ol className="mt-3 mb-3 pl-[1.625em] list-decimal" {...props}>
-      {children}
+      {props.children}
     </ol>
   );
 }

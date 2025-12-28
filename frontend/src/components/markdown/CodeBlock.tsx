@@ -4,15 +4,15 @@ import { dracula } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { MdCheck, MdContentCopy } from "react-icons/md";
 import Button from "../core/Button";
 
-interface CodeBlockProps {
+export interface CodeBlockProps {
   language: string;
   children: string;
   [key: string]: unknown;
 }
 
-function CodeBlock({ language, children, ...props }: CodeBlockProps) {
+function CodeBlock(props: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
-  const codeContent = String(children).replace(/\n$/, "");
+  const codeContent = String(props.children).replace(/\n$/, "");
 
   async function handleCopy() {
     try {
@@ -29,7 +29,7 @@ function CodeBlock({ language, children, ...props }: CodeBlockProps) {
       <SyntaxHighlighter
         style={dracula}
         PreTag="div"
-        language={language}
+        language={props.language}
         {...props}
       >
         {codeContent}
