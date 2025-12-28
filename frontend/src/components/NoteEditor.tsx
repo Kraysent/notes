@@ -62,56 +62,40 @@ function MarkdownView(props: MarkdownViewProps) {
           components={
             {
               h1(props: HeaderProps) {
-                return <H1 {...props}>{props.children}</H1>;
+                return <H1 {...props} />;
               },
               h2(props: HeaderProps) {
-                return <H2 {...props}>{props.children}</H2>;
+                return <H2 {...props} />;
               },
               h3(props: HeaderProps) {
-                return <H3 {...props}>{props.children}</H3>;
+                return <H3 {...props} />;
               },
               h4(props: HeaderProps) {
-                return <H4 {...props}>{props.children}</H4>;
+                return <H4 {...props} />;
               },
               h5(props: HeaderProps) {
-                return <H5 {...props}>{props.children}</H5>;
+                return <H5 {...props} />;
               },
               h6(props: HeaderProps) {
-                return <H6 {...props}>{props.children}</H6>;
+                return <H6 {...props} />;
               },
               code(props: CodeProps) {
-                const childrenString =
-                  typeof props.children === "string"
-                    ? props.children
-                    : String(props.children);
-                return (
-                  <Code
-                    inline={props.inline}
-                    className={props.className}
-                    {...props}
-                  >
-                    {childrenString}
-                  </Code>
-                );
+                return <Code {...props} />;
               },
               pre(props: PreProps) {
-                return <Pre {...props}>{props.children}</Pre>;
+                return <Pre {...props} />;
               },
               a(props: LinkProps) {
-                return (
-                  <Link href={props.href} {...props}>
-                    {props.children}
-                  </Link>
-                );
+                return <Link {...props} />;
               },
               ul(props: ListProps) {
-                return <Ul {...props}>{props.children}</Ul>;
+                return <Ul {...props} />;
               },
               ol(props: ListProps) {
-                return <Ol {...props}>{props.children}</Ol>;
+                return <Ol {...props} />;
               },
               li(props: ListProps) {
-                return <Li {...props}>{props.children}</Li>;
+                return <Li {...props} />;
               },
               input(props: CheckboxProps) {
                 return (

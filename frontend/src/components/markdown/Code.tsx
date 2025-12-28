@@ -3,17 +3,22 @@ import CodeBlock from "./CodeBlock";
 export interface CodeProps {
   inline?: boolean;
   className?: string;
-  children: string;
+  children: unknown;
   [key: string]: unknown;
 }
 
 export function Code(props: CodeProps) {
+  const childrenString =
+    typeof props.children === "string"
+      ? props.children
+      : String(props.children);
+
   const match = /language-(\w+)/.exec(props.className || "");
 
   if (!props.inline && match) {
     return (
       <CodeBlock language={match[1]} {...props}>
-        {props.children}
+        {childrenString}
       </CodeBlock>
     );
   }
@@ -25,7 +30,7 @@ export function Code(props: CodeProps) {
 
   return (
     <code className={codeClassName} {...props}>
-      {props.children}
+      {childrenString}
     </code>
   );
 }
