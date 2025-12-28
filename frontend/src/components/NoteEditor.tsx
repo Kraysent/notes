@@ -1,10 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { Fragment } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
 import Editor from "@monaco-editor/react";
-import ReactMarkdown from "react-markdown";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import remarkRehype from "remark-rehype";
 import rehypeRaw from "rehype-raw";
 import rehypeKatex from "rehype-katex";
+import rehypeReact from "rehype-react";
 import "katex/dist/katex.min.css";
 import { MdOutlineAutorenew, MdCheck, MdClear } from "react-icons/md";
 import { ViewMode, SaveStatus } from "../types";
@@ -53,66 +58,83 @@ export interface MarkdownViewProps {
 }
 
 function MarkdownView(props: MarkdownViewProps) {
+  const processor = useMemo(
+    () =>
+      unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkMath)
+        .use(remarkRehype, { allowDangerousHtml: true })
+        .use(rehypeRaw)
+        .use(rehypeKatex)
+        .use(rehypeReact, {
+          Fragment,
+          jsx,
+          jsxs,
+          components: {
+            h1(props: HeaderProps) {
+              return <H1 {...props} />;
+            },
+            h2(props: HeaderProps) {
+              return <H2 {...props} />;
+            },
+            h3(props: HeaderProps) {
+              return <H3 {...props} />;
+            },
+            h4(props: HeaderProps) {
+              return <H4 {...props} />;
+            },
+            h5(props: HeaderProps) {
+              return <H5 {...props} />;
+            },
+            h6(props: HeaderProps) {
+              return <H6 {...props} />;
+            },
+            code(props: CodeProps) {
+              return <Code {...props} />;
+            },
+            pre(props: PreProps) {
+              return <Pre {...props} />;
+            },
+            a(props: LinkProps) {
+              return <Link {...props} />;
+            },
+            ul(props: ListProps) {
+              return <Ul {...props} />;
+            },
+            ol(props: ListProps) {
+              return <Ol {...props} />;
+            },
+            li(props: ListProps) {
+              return <Li {...props} />;
+            },
+            input(props: CheckboxProps) {
+              return (
+                <Checkbox
+                  {...props}
+                  onChange={(e) => {
+                    console.log("Checkbox changed", e);
+                  }}
+                />
+              );
+            },
+          },
+        }),
+    []
+  );
+
+  const content = useMemo(() => {
+    try {
+      return processor.processSync(props.note).result;
+    } catch (error) {
+      console.error("Error processing markdown:", error);
+      return <div>Error rendering markdown</div>;
+    }
+  }, [processor, props.note]);
+
   return (
     <div className="h-full overflow-auto p-6 bg-[#1e1e1e] text-gray-100">
-      <div className="max-w-4xl mx-auto markdown-content">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkMath]}
-          rehypePlugins={[rehypeRaw, rehypeKatex]}
-          components={
-            {
-              h1(props: HeaderProps) {
-                return <H1 {...props} />;
-              },
-              h2(props: HeaderProps) {
-                return <H2 {...props} />;
-              },
-              h3(props: HeaderProps) {
-                return <H3 {...props} />;
-              },
-              h4(props: HeaderProps) {
-                return <H4 {...props} />;
-              },
-              h5(props: HeaderProps) {
-                return <H5 {...props} />;
-              },
-              h6(props: HeaderProps) {
-                return <H6 {...props} />;
-              },
-              code(props: CodeProps) {
-                return <Code {...props} />;
-              },
-              pre(props: PreProps) {
-                return <Pre {...props} />;
-              },
-              a(props: LinkProps) {
-                return <Link {...props} />;
-              },
-              ul(props: ListProps) {
-                return <Ul {...props} />;
-              },
-              ol(props: ListProps) {
-                return <Ol {...props} />;
-              },
-              li(props: ListProps) {
-                return <Li {...props} />;
-              },
-              input(props: CheckboxProps) {
-                return (
-                  <Checkbox
-                    {...props}
-                    onChange={(e) => {
-                      console.log("Checkbox changed", e);
-                    }}
-                  />
-                );
-              },
-            } as Record<string, unknown>
-          }
-        >
-          {props.note}
-        </ReactMarkdown>
-      </div>
+      <div className="max-w-4xl mx-auto markdown-content">{content}</div>
     </div>
   );
 }
