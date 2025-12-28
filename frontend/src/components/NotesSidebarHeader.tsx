@@ -1,11 +1,14 @@
-import TextField from './core/TextField'
+import TextField from "./core/TextField";
 
 interface NotesSidebarHeaderProps {
-  searchQuery: string
-  onSearchChange: (query: string) => void
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
 }
 
-function NotesSidebarHeader({ searchQuery, onSearchChange }: NotesSidebarHeaderProps) {
+function NotesSidebarHeader({
+  searchQuery,
+  onSearchChange,
+}: NotesSidebarHeaderProps) {
   return (
     <div className="p-4 border-b border-gray-700">
       <TextField
@@ -14,8 +17,7 @@ function NotesSidebarHeader({ searchQuery, onSearchChange }: NotesSidebarHeaderP
         placeholderKey="search.placeholder"
       />
     </div>
-  )
+  );
 }
 
-export default NotesSidebarHeader
-
+export default NotesSidebarHeader;

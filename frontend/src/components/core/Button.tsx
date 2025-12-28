@@ -1,14 +1,14 @@
-import type { ReactNode } from 'react'
-import { getText } from '../../texts'
+import type { ReactNode } from "react";
+import { getText } from "../../texts";
 
 interface ButtonProps {
-  children: ReactNode
-  onClick: () => void
-  tooltipKey?: string
+  children: ReactNode;
+  onClick: () => void;
+  tooltipKey?: string;
 }
 
 function Button({ children, onClick, tooltipKey }: ButtonProps) {
-  const tooltip = tooltipKey ? getText(tooltipKey) : ""
+  const tooltip = tooltipKey ? getText(tooltipKey) : "";
 
   return (
     <button
@@ -18,8 +18,7 @@ function Button({ children, onClick, tooltipKey }: ButtonProps) {
     >
       {children}
     </button>
-  )
+  );
 }
 
-export default Button
-
+export default Button;

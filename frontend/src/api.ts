@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '');
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV ? "http://localhost:8000" : "");
 
 export interface Note {
   title: string;
@@ -8,7 +10,11 @@ export interface Note {
   status: string;
 }
 
-export async function saveNote(title: string, content?: string, status?: string): Promise<Note> {
+export async function saveNote(
+  title: string,
+  content?: string,
+  status?: string,
+): Promise<Note> {
   const body: { title: string; content?: string; status?: string } = { title };
   if (content !== undefined) {
     body.content = content;
@@ -17,41 +23,47 @@ export async function saveNote(title: string, content?: string, status?: string)
     body.status = status;
   }
   const response = await fetch(`${API_BASE_URL}/api/note`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    throw new Error('Failed to save note');
+    throw new Error("Failed to save note");
   }
   return response.json();
 }
 
 export async function getNote(title: string): Promise<Note> {
-  const response = await fetch(`${API_BASE_URL}/api/note?title=${encodeURIComponent(title)}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
+  const response = await fetch(
+    `${API_BASE_URL}/api/note?title=${encodeURIComponent(title)}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
   if (!response.ok) {
-    throw new Error('Failed to get note');
+    throw new Error("Failed to get note");
   }
   return response.json();
 }
 
-export async function updateTitle(newTitle: string, oldTitle: string): Promise<Note> {
+export async function updateTitle(
+  newTitle: string,
+  oldTitle: string,
+): Promise<Note> {
   const response = await fetch(`${API_BASE_URL}/api/note/title`, {
-    method: 'PATCH',
+    method: "PATCH",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ new_title: newTitle, old_title: oldTitle }),
   });
   if (!response.ok) {
-    throw new Error('Failed to update title');
+    throw new Error("Failed to update title");
   }
   return response.json();
 }
@@ -63,36 +75,46 @@ export interface NotesListResponse {
   page_size: number;
 }
 
-export async function listNotes(page: number = 1, pageSize: number = 50, query?: string): Promise<NotesListResponse> {
+export async function listNotes(
+  page: number = 1,
+  pageSize: number = 50,
+  query?: string,
+): Promise<NotesListResponse> {
   const params = new URLSearchParams({
     page: String(page),
     page_size: String(pageSize),
   });
   if (query) {
-    params.set('query', query);
+    params.set("query", query);
   }
-  const response = await fetch(`${API_BASE_URL}/api/notes?${params.toString()}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
+  const response = await fetch(
+    `${API_BASE_URL}/api/notes?${params.toString()}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
   if (!response.ok) {
-    throw new Error('Failed to list notes');
+    throw new Error("Failed to list notes");
   }
   return response.json();
 }
 
 export async function downloadNote(title: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/note/download?title=${encodeURIComponent(title)}`, {
-    method: 'GET',
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/api/note/download?title=${encodeURIComponent(title)}`,
+    {
+      method: "GET",
+    },
+  );
   if (!response.ok) {
-    throw new Error('Failed to download note');
+    throw new Error("Failed to download note");
   }
   const blob = await response.blob();
   const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
   a.download = `${title}.md`;
   document.body.appendChild(a);
@@ -100,4 +122,3 @@ export async function downloadNote(title: string): Promise<void> {
   window.URL.revokeObjectURL(url);
   document.body.removeChild(a);
 }
-

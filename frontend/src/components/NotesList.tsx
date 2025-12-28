@@ -1,74 +1,83 @@
-import { useEffect, useState, useImperativeHandle, forwardRef, useCallback } from 'react'
-import { listNotes, saveNote } from '../api'
-import type { Note } from '../api'
-import Text, { TextSize, TextColor } from './core/Text'
-import Button from './core/Button'
-import { MdDelete } from 'react-icons/md'
+import {
+  useEffect,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+  useCallback,
+} from "react";
+import { listNotes, saveNote } from "../api";
+import type { Note } from "../api";
+import Text, { TextSize, TextColor } from "./core/Text";
+import Button from "./core/Button";
+import { MdDelete } from "react-icons/md";
 
 interface NotesListProps {
-  onNoteClick: (title: string) => void
-  searchQuery: string
+  onNoteClick: (title: string) => void;
+  searchQuery: string;
 }
 
 export interface NotesListRef {
-  refresh: () => void
+  refresh: () => void;
 }
 
-function NotesList({ onNoteClick, searchQuery }: NotesListProps, ref: React.Ref<NotesListRef>) {
-  const [notes, setNotes] = useState<Note[]>([])
-  const [loading, setLoading] = useState(true)
+function NotesList(
+  { onNoteClick, searchQuery }: NotesListProps,
+  ref: React.Ref<NotesListRef>,
+) {
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(() => {
-    setLoading(true)
+    setLoading(true);
     listNotes(1, 50, searchQuery || undefined)
       .then((response) => {
-        setNotes(response.notes)
-        setLoading(false)
+        setNotes(response.notes);
+        setLoading(false);
       })
       .catch((error) => {
-        console.error('Failed to load notes:', error)
-        setLoading(false)
-      })
-  }, [searchQuery])
+        console.error("Failed to load notes:", error);
+        setLoading(false);
+      });
+  }, [searchQuery]);
 
-  useImperativeHandle(ref, () => ({
-    refresh
-  }), [refresh])
+  useImperativeHandle(
+    ref,
+    () => ({
+      refresh,
+    }),
+    [refresh],
+  );
 
   useEffect(() => {
-    refresh()
-  }, [refresh])
+    refresh();
+  }, [refresh]);
 
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return date.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const handleDelete = async (title: string) => {
     try {
-      await saveNote(title, undefined, 'removed')
-      refresh()
+      await saveNote(title, undefined, "removed");
+      refresh();
     } catch (error) {
-      console.error('Failed to delete note:', error)
+      console.error("Failed to delete note:", error);
     }
-  }
+  };
 
   if (loading) {
-    return (
-      <div className="p-4 text-gray-400">Loading notes...</div>
-    )
+    return <div className="p-4 text-gray-400">Loading notes...</div>;
   }
 
   if (notes.length === 0) {
-    return (
-      <div className="p-4 text-gray-400">No notes yet</div>
-    )
+    return <div className="p-4 text-gray-400">No notes yet</div>;
   }
 
   return (
@@ -82,7 +91,11 @@ function NotesList({ onNoteClick, searchQuery }: NotesListProps, ref: React.Ref<
             onClick={() => onNoteClick(note.title)}
             className="flex-1 text-left p-1 pl-4"
           >
-            <Text size={TextSize.H6} color={TextColor.Primary} className="break-words">
+            <Text
+              size={TextSize.H6}
+              color={TextColor.Primary}
+              className="break-words"
+            >
               {note.title}
             </Text>
             <Text size={TextSize.Text} color={TextColor.Secondary}>
@@ -100,8 +113,7 @@ function NotesList({ onNoteClick, searchQuery }: NotesListProps, ref: React.Ref<
         </div>
       ))}
     </div>
-  )
+  );
 }
 
-export default forwardRef(NotesList)
-
+export default forwardRef(NotesList);

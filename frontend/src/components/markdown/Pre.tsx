@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
 interface PreProps {
-  children: ReactNode
-  [key: string]: any
+  children: ReactNode;
+  [key: string]: any;
 }
 
 export function Pre({ children, ...props }: PreProps) {
@@ -10,6 +10,5 @@ export function Pre({ children, ...props }: PreProps) {
     <pre className="bg-white/5" {...props}>
       {children}
     </pre>
-  )
+  );
 }
-

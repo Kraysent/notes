@@ -1,21 +1,20 @@
-import type { ReactNode, AnchorHTMLAttributes } from 'react'
+import type { ReactNode, AnchorHTMLAttributes } from "react";
 
 interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
-  children: ReactNode
-  href?: string
+  children: ReactNode;
+  href?: string;
 }
 
-function Link({ children, href, className = '', ...props }: LinkProps) {
+function Link({ children, href, className = "", ...props }: LinkProps) {
   return (
-    <a 
-      href={href} 
+    <a
+      href={href}
       className={`text-[#60a5fa] underline ${className}`}
       {...props}
     >
       {children}
     </a>
-  )
+  );
 }
 
-export default Link
-
+export default Link;

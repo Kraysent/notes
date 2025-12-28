@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react'
-import LinkCore from '../core/Link'
+import type { ReactNode } from "react";
+import LinkCore from "../core/Link";
 
 interface LinkProps {
-  href?: string
-  children: ReactNode
-  [key: string]: any
+  href?: string;
+  children: ReactNode;
+  [key: string]: any;
 }
 
 export function Link({ href, children, ...props }: LinkProps) {
@@ -12,6 +12,5 @@ export function Link({ href, children, ...props }: LinkProps) {
     <LinkCore href={href} target="_blank" rel="noopener noreferrer" {...props}>
       {children}
     </LinkCore>
-  )
+  );
 }
-
