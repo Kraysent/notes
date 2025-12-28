@@ -16,6 +16,7 @@ import { Link } from "./markdown/Link";
 import { Code } from "./markdown/Code";
 import { Pre } from "./markdown/Pre";
 import { Ul, Ol, Li } from "./markdown/List";
+import { Checkbox, type CheckboxProps } from "./markdown/Checkbox";
 
 interface ComponentProps {
   node?: unknown;
@@ -150,6 +151,16 @@ function MarkdownView({ note }: MarkdownViewProps) {
               li({ node, children, ...props }: ComponentProps) {
                 return (
                   <Li {...(props as Record<string, unknown>)}>{children}</Li>
+                );
+              },
+              input(props: CheckboxProps) {
+                return (
+                  <Checkbox
+                    {...props}
+                    onChange={(e) => {
+                      console.log("Checkbox changed", e);
+                    }}
+                  />
                 );
               },
             } as Record<string, unknown>
