@@ -107,3 +107,18 @@ export function H5(props: HeaderProps) {
 export function H6(props: HeaderProps) {
   return <HeaderComponent {...props} size={TextSize.H6} />;
 }
+
+export interface ParagraphProps {
+  children: ReactNode;
+  "data-startline": number;
+  "data-startcolumn": number;
+  "data-startoffset": number;
+  "data-endline": number;
+  "data-endcolumn": number;
+  "data-endoffset": number;
+  onHover?: (node: NodeInfo) => string;
+}
+
+export function Paragraph(props: ParagraphProps) {
+  return <HeaderComponent {...props} size={TextSize.Text} />;
+}

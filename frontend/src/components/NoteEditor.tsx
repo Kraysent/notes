@@ -15,13 +15,23 @@ import { MdOutlineAutorenew, MdCheck, MdClear } from "react-icons/md";
 import { ViewMode, SaveStatus } from "../types";
 import { saveNote } from "../api";
 import settings from "../settings.json";
-import { H1, H2, H3, H4, H5, H6, type HeaderProps } from "./markdown/Text";
+import {
+  H1,
+  H2,
+  H3,
+  H4,
+  H5,
+  H6,
+  Paragraph,
+  type HeaderProps,
+  type ParagraphProps,
+} from "./markdown/Text";
 import { Link, type LinkProps } from "./markdown/Link";
 import { Code, type CodeProps } from "./markdown/Code";
 import { Pre, type PreProps } from "./markdown/Pre";
 import { Ul, Ol, Li, type ListProps } from "./markdown/List";
 import { Checkbox, type CheckboxProps } from "./markdown/Checkbox";
-import type { NodeInfo } from "../utils";
+import { gatherPosition, type NodeInfo } from "../utils";
 
 export interface RawEditorProps {
   note: string;
@@ -59,22 +69,34 @@ export interface MarkdownViewProps {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function gatherPosition(node: any) {
-  return {
-    [`data-startline`]: node.position.start.line,
-    [`data-startcolumn`]: node.position.start.column,
-    [`data-startoffset`]: node.position.start.offset,
-    [`data-endline`]: node.position.end.line,
-    [`data-endcolumn`]: node.position.end.column,
-    [`data-endoffset`]: node.position.end.offset,
-  };
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function heading(state: any, node: any) {
   const result = {
     type: "element",
     tagName: "h" + node.depth,
+    properties: { ...gatherPosition(node) },
+    children: state.all(node),
+  };
+  state.patch(node, result);
+  return state.applyData(node, result);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function text(state: any, node: any) {
+  const result = {
+    type: "element",
+    tagName: "span",
+    properties: { ...gatherPosition(node) },
+    children: [{ type: "text", value: node.value }],
+  };
+  state.patch(node, result);
+  return state.applyData(node, result);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function paragraph(state: any, node: any) {
+  const result = {
+    type: "element",
+    tagName: "p",
     properties: { ...gatherPosition(node) },
     children: state.all(node),
   };
@@ -98,6 +120,24 @@ function MarkdownView(props: MarkdownViewProps) {
     return text !== null ? text : "[could not determine snippet]";
   }
 
+  console.log(
+    JSON.stringify(
+      unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkMath)
+        .use(remarkRehype, {
+          allowDangerousHtml: false,
+          handlers: {
+            heading: heading,
+            text: text,
+            paragraph: paragraph,
+          },
+        })
+        .parse(props.note)
+    )
+  );
+
   const processor = useMemo(
     () =>
       unified()
@@ -108,6 +148,8 @@ function MarkdownView(props: MarkdownViewProps) {
           allowDangerousHtml: false,
           handlers: {
             heading: heading,
+            text: text,
+            paragraph: paragraph,
           },
         })
         .use(rehypeRaw)
@@ -134,6 +176,9 @@ function MarkdownView(props: MarkdownViewProps) {
             },
             h6(props: HeaderProps) {
               return <H6 {...props} onHover={getOriginalCode} />;
+            },
+            p(props: ParagraphProps) {
+              return <Paragraph {...props} onHover={getOriginalCode} />;
             },
             code(props: CodeProps) {
               return <Code {...props} />;
