@@ -6,6 +6,7 @@ export default tseslint.config(eslintConfigPrettier, {
   extends: [eslint.configs.recommended, tseslint.configs.recommended],
   rules: {
     "@typescript-eslint/array-type": "error",
+    "@typescript-eslint/no-unused-vars": "off",
     "array-callback-return": "error",
     "no-await-in-loop": "error",
     "no-constructor-return": "error",

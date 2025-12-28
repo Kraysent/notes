@@ -44,7 +44,7 @@ function Header({
     }
   }, [title]);
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
       e.preventDefault();
       const trimmedValue = editValue.trim();
@@ -56,9 +56,9 @@ function Header({
       setEditValue(title);
       setIsEditing(false);
     }
-  };
+  }
 
-  const handleBlur = () => {
+  function handleBlur() {
     const trimmedValue = editValue.trim();
     if (trimmedValue && trimmedValue !== title) {
       onTitleSubmit(trimmedValue);
@@ -66,14 +66,14 @@ function Header({
       setEditValue(title);
     }
     setIsEditing(false);
-  };
+  }
 
-  const handleClick = () => {
+  function handleClick() {
     if (title && !isEditing) {
       setIsEditing(true);
       setEditValue(title);
     }
-  };
+  }
 
   return (
     <div className="px-4 py-2 border-b border-gray-700 bg-[#1e1e1e]/95 backdrop-blur-sm flex items-center justify-between">

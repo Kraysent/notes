@@ -20,10 +20,10 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const sidebarRef = useRef<NotesSidebarRef>(null);
 
-  const switchNote = (title: string, content: string) => {
+  function switchNote(title: string, content: string) {
     setTitle(title);
     setNote(content);
-  };
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -70,7 +70,7 @@ function App() {
   }, [isSidebarCollapsed]);
 
   useEffect(() => {
-    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+    function handleKeyDown(e: globalThis.KeyboardEvent) {
       const viewToggleBinding = getKeybinding("view.toggle");
       if (viewToggleBinding && matchesKeybinding(e, viewToggleBinding)) {
         e.preventDefault();
@@ -78,13 +78,13 @@ function App() {
           prevMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw,
         );
       }
-    };
+    }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const handleTitleSubmit = async (submittedTitle: string) => {
+  async function handleTitleSubmit(submittedTitle: string) {
     if (!submittedTitle.trim()) {
       return;
     }
@@ -100,9 +100,9 @@ function App() {
     }
     setTitle(submittedTitle);
     sidebarRef.current?.refresh();
-  };
+  }
 
-  const handleNoteClick = (noteTitle: string) => {
+  function handleNoteClick(noteTitle: string) {
     getNote(noteTitle)
       .then((loadedNote) => {
         switchNote(loadedNote.title, loadedNote.content);
@@ -110,19 +110,19 @@ function App() {
       .catch((error) => {
         console.error("Failed to load note:", error);
       });
-  };
+  }
 
-  const handleNewNote = () => {
+  function handleNewNote() {
     switchNote("", "");
-  };
+  }
 
-  const handleDownloadNote = () => {
+  function handleDownloadNote() {
     if (title && title.trim()) {
       downloadNote(title).catch((error) => {
         console.error("Failed to download note:", error);
       });
     }
-  };
+  }
 
   return (
     <div className="w-full h-screen flex flex-col">

@@ -52,7 +52,7 @@ function NotesList(
     refresh();
   }, [refresh]);
 
-  const formatDate = (dateString: string): string => {
+  function formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, {
       year: "numeric",
@@ -61,16 +61,16 @@ function NotesList(
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
+  }
 
-  const handleDelete = async (title: string) => {
+  async function handleDelete(title: string) {
     try {
       await saveNote(title, undefined, "removed");
       refresh();
     } catch (error) {
       console.error("Failed to delete note:", error);
     }
-  };
+  }
 
   if (loading) {
     return <div className="p-4 text-gray-400">Loading notes...</div>;

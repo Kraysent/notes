@@ -4,11 +4,11 @@ type KeyBinding = string[];
 
 function getKeybinding(key: string): KeyBinding | null {
   const keys = key.split(".");
-  let value: any = keybindings;
+  let value: unknown = keybindings;
 
   for (const k of keys) {
-    if (value && typeof value === "object" && k in value) {
-      value = value[k];
+    if (value && typeof value === "object" && value !== null && k in value) {
+      value = (value as Record<string, unknown>)[k];
     } else {
       console.warn(`Keybinding key not found: ${key}`);
       return null;

@@ -3,7 +3,7 @@ import Text, { TextSize } from "../core/Text";
 
 interface HeaderProps {
   children: ReactNode;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export function H1({ children, ...props }: HeaderProps) {

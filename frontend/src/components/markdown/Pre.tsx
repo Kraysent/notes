@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 interface PreProps {
   children: ReactNode;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export function Pre({ children, ...props }: PreProps) {

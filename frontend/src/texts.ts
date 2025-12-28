@@ -4,11 +4,11 @@ type TextKey = string;
 
 function getText(key: TextKey): string {
   const keys = key.split(".");
-  let value: any = texts;
+  let value: unknown = texts;
 
   for (const k of keys) {
-    if (value && typeof value === "object" && k in value) {
-      value = value[k];
+    if (value && typeof value === "object" && value !== null && k in value) {
+      value = (value as Record<string, unknown>)[k];
     } else {
       console.warn(`Text key not found: ${key}`);
       return key;

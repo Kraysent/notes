@@ -4,7 +4,7 @@ import LinkCore from "../core/Link";
 interface LinkProps {
   href?: string;
   children: ReactNode;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export function Link({ href, children, ...props }: LinkProps) {

@@ -4,7 +4,7 @@ import { isValidElement } from "react";
 interface ListProps {
   children: ReactNode;
   ordered?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 function hasCheckbox(children: ReactNode): boolean {
@@ -21,7 +21,7 @@ function hasCheckbox(children: ReactNode): boolean {
   if (isValidElement(children)) {
     if (
       children.type === "input" &&
-      (children.props as any)?.type === "checkbox"
+      (children.props as { type?: string })?.type === "checkbox"
     ) {
       return true;
     }
