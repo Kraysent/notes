@@ -13,6 +13,7 @@ test:
 	uv run pytest backend/tests/
 	cd frontend && yarn prettier --check .
 	cd frontend && yarn lint
+	cd frontend && yarn vitest run
 
 
 fix:
