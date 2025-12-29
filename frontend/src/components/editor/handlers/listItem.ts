@@ -1,3 +1,5 @@
+import { gatherPosition } from "../../../utils";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function listItemLoose(node: any) {
   const spread = node.spread;
@@ -6,8 +8,6 @@ function listItemLoose(node: any) {
     ? node.children.length > 1
     : spread;
 }
-
-import { gatherPosition } from "../../../utils";
 
 // source: https://github.com/syntax-tree/mdast-util-to-hast/blob/main/lib/handlers/list-item.js
 // altered to add line position of the original element

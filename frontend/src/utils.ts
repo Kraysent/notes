@@ -4,6 +4,8 @@
 //
 // thanks a lot to https://dev.to/wangpin34/how-to-retain-position-of-markdown-element-in-remarkjs-k8m
 // for the explaination on how and why to do this
+//
+// TODO: I feel like there is a less clunky way to do this but will need to think more about it
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function gatherPosition(node: any) {
   return {
@@ -35,27 +37,59 @@ export class StringSlice {
 export function getStringSlice(slice: StringSlice, str: string): string {
   if (slice.startPos.offset < 0 || slice.endPos.offset < 0) {
     throw new Error(
-      `Node position offsets cannot be negative (start: ${slice.startPos.offset}, end: ${slice.endPos.offset})`,
+      `Node position offsets cannot be negative (start: ${slice.startPos.offset}, end: ${slice.endPos.offset})`
     );
   }
 
   if (slice.startPos.offset > slice.endPos.offset) {
     throw new Error(
-      `Start offset (${slice.startPos.offset}) cannot be greater than end offset (${slice.endPos.offset})`,
+      `Start offset (${slice.startPos.offset}) cannot be greater than end offset (${slice.endPos.offset})`
     );
   }
 
   if (slice.startPos.offset >= str.length) {
     throw new Error(
-      `Node position start offset (${slice.startPos.offset}) is out of bounds for the note (note length: ${str.length})`,
+      `Node position start offset (${slice.startPos.offset}) is out of bounds for the note (note length: ${str.length})`
     );
   }
 
   if (slice.endPos.offset > str.length) {
     throw new Error(
-      `Node position end offset (${slice.endPos.offset}) is out of bounds for the note (note length: ${str.length})`,
+      `Node position end offset (${slice.endPos.offset}) is out of bounds for the note (note length: ${str.length})`
     );
   }
 
   return str.slice(slice.startPos.offset, slice.endPos.offset);
+}
+
+export function toggleCheckbox(slice: StringSlice, markdown: string): string {
+  const sliceContent = getStringSlice(slice, markdown);
+
+  const uncheckedPattern = /- \[ \]/;
+  const checkedPattern = /- \[x\]/;
+
+  const uncheckedMatch = sliceContent.match(uncheckedPattern);
+  const checkedMatch = sliceContent.match(checkedPattern);
+
+  if (!uncheckedMatch && !checkedMatch) {
+    throw new Error("No checkbox pattern found in the slice");
+  }
+
+  let matchIndex: number;
+  let replacement: string;
+
+  if (uncheckedMatch) {
+    matchIndex = uncheckedMatch.index!;
+    replacement = "- [x]";
+  } else {
+    matchIndex = checkedMatch!.index!;
+    replacement = "- [ ]";
+  }
+
+  const absoluteOffset = slice.startPos.offset + matchIndex;
+
+  const before = markdown.slice(0, absoluteOffset);
+  const after = markdown.slice(absoluteOffset + 5);
+
+  return before + replacement + after;
 }
