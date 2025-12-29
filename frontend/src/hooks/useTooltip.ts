@@ -3,11 +3,7 @@ import { StringSlice } from "../utils";
 import settings from "../settings.json";
 
 export interface TooltipPositionData {
-  "data-startline"?: number;
-  "data-startcolumn"?: number;
   "data-startoffset"?: number;
-  "data-endline"?: number;
-  "data-endcolumn"?: number;
   "data-endoffset"?: number;
 }
 
@@ -50,13 +46,9 @@ export function useTooltip({
     timeoutRef.current = setTimeout(() => {
       const node = {
         startPos: {
-          line: positionData["data-startline"] ?? 0,
-          column: positionData["data-startcolumn"] ?? 0,
           offset: positionData["data-startoffset"] ?? 0,
         },
         endPos: {
-          line: positionData["data-endline"] ?? 0,
-          column: positionData["data-endcolumn"] ?? 0,
           offset: positionData["data-endoffset"] ?? 0,
         },
       };

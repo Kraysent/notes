@@ -5,11 +5,7 @@ import { useTooltip } from "../../hooks/useTooltip";
 
 export interface HeaderProps {
   children: ReactNode;
-  "data-startline": number;
-  "data-startcolumn": number;
   "data-startoffset": number;
-  "data-endline": number;
-  "data-endcolumn": number;
   "data-endoffset": number;
   onHover?: (node: StringSlice) => string;
 }
@@ -23,11 +19,7 @@ function HeaderComponent(props: HeaderComponentProps) {
   const { tooltipText, handleMouseEnter, handleMouseLeave } = useTooltip({
     onHover,
     positionData: {
-      "data-startline": props["data-startline"],
-      "data-startcolumn": props["data-startcolumn"],
       "data-startoffset": props["data-startoffset"],
-      "data-endline": props["data-endline"],
-      "data-endcolumn": props["data-endcolumn"],
       "data-endoffset": props["data-endoffset"],
     },
   });
@@ -77,11 +69,7 @@ export function H6(props: HeaderProps) {
 
 export interface ParagraphProps {
   children: ReactNode;
-  "data-startline": number;
-  "data-startcolumn": number;
   "data-startoffset": number;
-  "data-endline": number;
-  "data-endcolumn": number;
   "data-endoffset": number;
   onHover?: (node: StringSlice) => string;
 }

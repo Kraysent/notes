@@ -9,18 +9,12 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function gatherPosition(node: any) {
   return {
-    [`data-startline`]: node.position.start.line,
-    [`data-startcolumn`]: node.position.start.column,
     [`data-startoffset`]: node.position.start.offset,
-    [`data-endline`]: node.position.end.line,
-    [`data-endcolumn`]: node.position.end.column,
     [`data-endoffset`]: node.position.end.offset,
   };
 }
 
 export interface Position {
-  line: number;
-  column: number;
   offset: number;
 }
 
