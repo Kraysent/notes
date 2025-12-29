@@ -109,7 +109,7 @@ function MarkdownView(props: MarkdownViewProps) {
             },
           },
         }),
-    []
+    [],
   );
 
   const content = useMemo(() => {
