@@ -25,59 +25,16 @@ import { Link, type LinkProps } from "../markdown/Link";
 import { Code } from "../markdown/Code";
 import { Pre } from "../markdown/Pre";
 import { Ul, Ol, Li } from "../markdown/List";
-import { Checkbox } from "../markdown/Checkbox";
-import { gatherPosition, getStringSlice, type StringSlice } from "../../utils";
+import { Checkbox, type CheckboxProps } from "../markdown/Checkbox";
+import { getStringSlice, type StringSlice } from "../../utils";
+import { heading } from "./handlers/heading";
+import { text } from "./handlers/text";
+import { paragraph } from "./handlers/paragraph";
+import { link } from "./handlers/link";
+import { listItem } from "./handlers/listItem";
 
 export interface MarkdownViewProps {
   note: string;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function heading(state: any, node: any) {
-  const result = {
-    type: "element",
-    tagName: "h" + node.depth,
-    properties: { ...gatherPosition(node) },
-    children: state.all(node),
-  };
-  state.patch(node, result);
-  return state.applyData(node, result);
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function text(state: any, node: any) {
-  const result = {
-    type: "element",
-    tagName: "span",
-    properties: { ...gatherPosition(node) },
-    children: [{ type: "text", value: node.value }],
-  };
-  state.patch(node, result);
-  return state.applyData(node, result);
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function paragraph(state: any, node: any) {
-  const result = {
-    type: "element",
-    tagName: "p",
-    properties: { ...gatherPosition(node) },
-    children: state.all(node),
-  };
-  state.patch(node, result);
-  return state.applyData(node, result);
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function link(state: any, node: any) {
-  const result = {
-    type: "element",
-    tagName: "a",
-    properties: { ...gatherPosition(node) },
-    children: state.all(node),
-  };
-  state.patch(node, result);
-  return state.applyData(node, result);
 }
 
 function MarkdownView(props: MarkdownViewProps) {
@@ -88,6 +45,11 @@ function MarkdownView(props: MarkdownViewProps) {
       console.error("Error getting original code for node:", error);
       return "[could not determine snippet]";
     }
+  }
+
+  function handleCheckboxChange(node: StringSlice): void {
+    const originalCode = getOriginalCode(node);
+    console.log(originalCode);
   }
 
   const processor = useMemo(
@@ -103,6 +65,7 @@ function MarkdownView(props: MarkdownViewProps) {
             text: text,
             paragraph: paragraph,
             link: link,
+            listItem: listItem,
           },
         })
         .use(rehypeRaw)
@@ -141,7 +104,9 @@ function MarkdownView(props: MarkdownViewProps) {
             ul: Ul,
             ol: Ol,
             li: Li,
-            input: Checkbox,
+            input(props: CheckboxProps) {
+              return <Checkbox {...props} onChange={handleCheckboxChange} />;
+            },
           },
         }),
     []

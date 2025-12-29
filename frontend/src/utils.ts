@@ -3,7 +3,7 @@
 // not support nested objects and converts them into [Object object]
 //
 // thanks a lot to https://dev.to/wangpin34/how-to-retain-position-of-markdown-element-in-remarkjs-k8m
-// for the explaintation on how and why to do this
+// for the explaination on how and why to do this
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function gatherPosition(node: any) {
   return {

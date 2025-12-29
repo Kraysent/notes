@@ -30,7 +30,6 @@ export default tseslint.config(eslintConfigPrettier, {
     eqeqeq: "error",
     "func-name-matching": "error",
     "func-style": ["error", "declaration"],
-    "init-declarations": ["error", "always"],
     "no-array-constructor": "error",
     "no-caller": "error",
     "no-delete-var": "error",
