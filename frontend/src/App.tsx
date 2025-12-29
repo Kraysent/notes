@@ -139,7 +139,7 @@ function App() {
       <div className="flex-1 flex overflow-hidden">
         <NoteEditor
           note={note}
-          onNoteChange={setNote}
+          setNote={setNote}
           viewMode={viewMode}
           title={title}
         />

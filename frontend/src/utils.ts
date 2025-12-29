@@ -56,17 +56,15 @@ export function getStringSlice(slice: StringSlice, str: string): string {
   return str.slice(slice.startPos.offset, slice.endPos.offset);
 }
 
-export function toggleCheckbox(slice: StringSlice, markdown: string): string {
-  const sliceContent = getStringSlice(slice, markdown);
-
+export function toggleCheckbox(content: string): string {
   const uncheckedPattern = /- \[ \]/;
   const checkedPattern = /- \[x\]/;
 
-  const uncheckedMatch = sliceContent.match(uncheckedPattern);
-  const checkedMatch = sliceContent.match(checkedPattern);
+  const uncheckedMatch = content.match(uncheckedPattern);
+  const checkedMatch = content.match(checkedPattern);
 
   if (!uncheckedMatch && !checkedMatch) {
-    throw new Error("No checkbox pattern found in the slice");
+    throw new Error("No checkbox pattern found in the content");
   }
 
   let matchIndex: number;
@@ -80,10 +78,8 @@ export function toggleCheckbox(slice: StringSlice, markdown: string): string {
     replacement = "- [ ]";
   }
 
-  const absoluteOffset = slice.startPos.offset + matchIndex;
-
-  const before = markdown.slice(0, absoluteOffset);
-  const after = markdown.slice(absoluteOffset + 5);
+  const before = content.slice(0, matchIndex);
+  const after = content.slice(matchIndex + 5);
 
   return before + replacement + after;
 }

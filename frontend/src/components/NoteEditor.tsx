@@ -8,7 +8,7 @@ import MarkdownView from "./editor/MarkdownView";
 
 export interface NoteEditorProps {
   note: string;
-  onNoteChange: (note: string) => void;
+  setNote: (note: string) => void;
   viewMode: ViewMode;
   title: string;
 }
@@ -110,9 +110,9 @@ function NoteEditor(props: NoteEditorProps) {
     <div className="flex-1 overflow-hidden relative">
       <div className="absolute top-4 right-4 z-10">{getStatusIcon()}</div>
       {props.viewMode === ViewMode.Raw ? (
-        <RawEditor note={props.note} onNoteChange={props.onNoteChange} />
+        <RawEditor note={props.note} setNote={props.setNote} />
       ) : (
-        <MarkdownView note={props.note} />
+        <MarkdownView note={props.note} setNote={props.setNote} />
       )}
     </div>
   );

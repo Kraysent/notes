@@ -26,7 +26,7 @@ import { Code } from "../markdown/Code";
 import { Pre } from "../markdown/Pre";
 import { Ul, Ol, Li } from "../markdown/List";
 import { Checkbox, type CheckboxProps } from "../markdown/Checkbox";
-import { getStringSlice, type StringSlice } from "../../utils";
+import { getStringSlice, toggleCheckbox, type StringSlice } from "../../utils";
 import { heading } from "./handlers/heading";
 import { text } from "./handlers/text";
 import { paragraph } from "./handlers/paragraph";
@@ -35,21 +35,23 @@ import { listItem } from "./handlers/listItem";
 
 export interface MarkdownViewProps {
   note: string;
+  setNote: (note: string) => void;
 }
 
 function MarkdownView(props: MarkdownViewProps) {
   function getOriginalCode(node: StringSlice): string {
-    try {
-      return getStringSlice(node, props.note);
-    } catch (error) {
-      console.error("Error getting original code for node:", error);
-      return "[could not determine snippet]";
-    }
+    return getStringSlice(node, props.note);
   }
 
   function handleCheckboxChange(node: StringSlice): void {
-    const originalCode = getOriginalCode(node);
-    console.log(originalCode);
+    const sliceContent = getStringSlice(node, props.note);
+    const toggledContent = toggleCheckbox(sliceContent);
+
+    const before = props.note.slice(0, node.startPos.offset);
+    const after = props.note.slice(node.endPos.offset);
+    const newCode = before + toggledContent + after;
+
+    props.setNote(newCode);
   }
 
   const processor = useMemo(
@@ -109,7 +111,7 @@ function MarkdownView(props: MarkdownViewProps) {
             },
           },
         }),
-    [],
+    []
   );
 
   const content = useMemo(() => {

@@ -90,52 +90,27 @@ describe("getStringSlice", () => {
 
 describe("toggleCheckbox", () => {
   it("toggles unchecked checkbox to checked", () => {
-    const markdown = "Test note text\n- [ ] checkbox 1\n- [x] checkbox 2";
-    const slice = new StringSlice({ offset: 15 }, { offset: 31 });
-    const result = toggleCheckbox(slice, markdown);
-    expect(result).toBe("Test note text\n- [x] checkbox 1\n- [x] checkbox 2");
+    const content = "- [ ] checkbox 1";
+    const result = toggleCheckbox(content);
+    expect(result).toBe("- [x] checkbox 1");
   });
 
   it("toggles checked checkbox to unchecked", () => {
-    const markdown = "Test note text\n- [ ] checkbox 1\n- [x] checkbox 2";
-    const slice = new StringSlice({ offset: 32 }, { offset: 48 });
-    const result = toggleCheckbox(slice, markdown);
-    expect(result).toBe("Test note text\n- [ ] checkbox 1\n- [ ] checkbox 2");
-  });
-
-  it("handles checkbox at the beginning of the note", () => {
-    const markdown = "- [ ] first checkbox\nSome text";
-    const slice = new StringSlice({ offset: 0 }, { offset: 19 });
-    const result = toggleCheckbox(slice, markdown);
-    expect(result).toBe("- [x] first checkbox\nSome text");
-  });
-
-  it("handles checkbox at the end of the note", () => {
-    const markdown = "Some text\n- [x] last checkbox";
-    const slice = new StringSlice({ offset: 10 }, { offset: 29 });
-    const result = toggleCheckbox(slice, markdown);
-    expect(result).toBe("Some text\n- [ ] last checkbox");
-  });
-
-  it("handles multiple checkboxes and only toggles the one in the slice", () => {
-    const markdown = "- [ ] first\n- [x] second\n- [ ] third";
-    const slice = new StringSlice({ offset: 12 }, { offset: 24 });
-    const result = toggleCheckbox(slice, markdown);
-    expect(result).toBe("- [ ] first\n- [ ] second\n- [ ] third");
+    const content = "- [x] checkbox 2";
+    const result = toggleCheckbox(content);
+    expect(result).toBe("- [ ] checkbox 2");
   });
 
   it("throws error when no checkbox pattern is found", () => {
-    const markdown = "This is not a checkbox line";
-    const slice = new StringSlice({ offset: 0 }, { offset: 27 });
-    expect(() => toggleCheckbox(slice, markdown)).toThrow(
-      "No checkbox pattern found in the slice"
+    const content = "This is not a checkbox line";
+    expect(() => toggleCheckbox(content)).toThrow(
+      "No checkbox pattern found in the content"
     );
   });
 
   it("handles checkbox with indentation", () => {
-    const markdown = "  - [ ] indented checkbox";
-    const slice = new StringSlice({ offset: 0 }, { offset: 25 });
-    const result = toggleCheckbox(slice, markdown);
+    const content = "  - [ ] indented checkbox";
+    const result = toggleCheckbox(content);
     expect(result).toBe("  - [x] indented checkbox");
   });
 });

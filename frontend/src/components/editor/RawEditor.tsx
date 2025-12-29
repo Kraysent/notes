@@ -2,7 +2,7 @@ import Editor from "@monaco-editor/react";
 
 export interface RawEditorProps {
   note: string;
-  onNoteChange: (note: string) => void;
+  setNote: (note: string) => void;
 }
 
 function RawEditor(props: RawEditorProps) {
@@ -11,7 +11,7 @@ function RawEditor(props: RawEditorProps) {
       height="100%"
       defaultLanguage="markdown"
       value={props.note}
-      onChange={(value) => props.onNoteChange(value || "")}
+      onChange={(value) => props.setNote(value || "")}
       theme="vs-dark"
       options={{
         minimap: { enabled: false },

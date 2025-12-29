@@ -1,3 +1,13 @@
+# Package manager
+
+Use `yarn` as the package manager for the frontend:
+
+```bash
+yarn install
+yarn add <package>
+yarn remove <package>
+```
+
 # How to test code
 
 Run the `make test` target to execute all tests and checks for both backend and frontend code:
