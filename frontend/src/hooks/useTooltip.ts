@@ -46,10 +46,10 @@ export function useTooltip({
     timeoutRef.current = setTimeout(() => {
       const node = {
         startPos: {
-          offset: positionData["data-startoffset"] ?? 0,
+          offset: Number(positionData["data-startoffset"]),
         },
         endPos: {
-          offset: positionData["data-endoffset"] ?? 0,
+          offset: Number(positionData["data-endoffset"]),
         },
       };
 

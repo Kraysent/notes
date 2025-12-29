@@ -5,8 +5,8 @@ import { useTooltip } from "../../hooks/useTooltip";
 
 export interface HeaderProps {
   children: ReactNode;
-  "data-startoffset": number;
-  "data-endoffset": number;
+  "data-startoffset": string;
+  "data-endoffset": string;
   onHover?: (node: StringSlice) => string;
 }
 
@@ -19,8 +19,8 @@ function HeaderComponent(props: HeaderComponentProps) {
   const { tooltipText, handleMouseEnter, handleMouseLeave } = useTooltip({
     onHover,
     positionData: {
-      "data-startoffset": props["data-startoffset"],
-      "data-endoffset": props["data-endoffset"],
+      "data-startoffset": Number(props["data-startoffset"]),
+      "data-endoffset": Number(props["data-endoffset"]),
     },
   });
 
@@ -69,8 +69,8 @@ export function H6(props: HeaderProps) {
 
 export interface ParagraphProps {
   children: ReactNode;
-  "data-startoffset": number;
-  "data-endoffset": number;
+  "data-startoffset": string;
+  "data-endoffset": string;
   onHover?: (node: StringSlice) => string;
 }
 

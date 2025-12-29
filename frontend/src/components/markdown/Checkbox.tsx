@@ -3,8 +3,8 @@ import { StringSlice } from "../../utils";
 export interface CheckboxProps {
   checked: boolean;
   onChange?: (node: StringSlice) => void;
-  "data-startoffset"?: number;
-  "data-endoffset"?: number;
+  "data-startoffset"?: string;
+  "data-endoffset"?: string;
   [key: string]: unknown;
 }
 
@@ -17,10 +17,10 @@ export function Checkbox(props: CheckboxProps) {
         if (props.onChange) {
           const node: StringSlice = {
             startPos: {
-              offset: props["data-startoffset"] ?? 0,
+              offset: Number(props["data-startoffset"]),
             },
             endPos: {
-              offset: props["data-endoffset"] ?? 0,
+              offset: Number(props["data-endoffset"]),
             },
           };
           props.onChange(node);
