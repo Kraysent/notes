@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { MdOutlineAutorenew, MdCheck, MdClear } from "react-icons/md";
 import { ViewMode, SaveStatus } from "../types";
 import { saveNote } from "../api";

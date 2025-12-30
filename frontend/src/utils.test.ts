@@ -72,7 +72,7 @@ describe("getStringSlice", () => {
     it("throws error when startPos.offset is greater than endPos.offset", () => {
       const node = new StringSlice({ offset: 10 }, { offset: 5 });
       expect(() => getStringSlice(node, note)).toThrow(
-        "cannot be greater than end offset"
+        "cannot be greater than end offset",
       );
     });
 
@@ -104,7 +104,7 @@ describe("toggleCheckbox", () => {
   it("throws error when no checkbox pattern is found", () => {
     const content = "This is not a checkbox line";
     expect(() => toggleCheckbox(content)).toThrow(
-      "No checkbox pattern found in the content"
+      "No checkbox pattern found in the content",
     );
   });
 

@@ -31,25 +31,25 @@ export class StringSlice {
 export function getStringSlice(slice: StringSlice, str: string): string {
   if (slice.startPos.offset < 0 || slice.endPos.offset < 0) {
     throw new Error(
-      `Node position offsets cannot be negative (start: ${slice.startPos.offset}, end: ${slice.endPos.offset})`
+      `Node position offsets cannot be negative (start: ${slice.startPos.offset}, end: ${slice.endPos.offset})`,
     );
   }
 
   if (slice.startPos.offset > slice.endPos.offset) {
     throw new Error(
-      `Start offset (${slice.startPos.offset}) cannot be greater than end offset (${slice.endPos.offset})`
+      `Start offset (${slice.startPos.offset}) cannot be greater than end offset (${slice.endPos.offset})`,
     );
   }
 
   if (slice.startPos.offset >= str.length) {
     throw new Error(
-      `Node position start offset (${slice.startPos.offset}) is out of bounds for the note (note length: ${str.length})`
+      `Node position start offset (${slice.startPos.offset}) is out of bounds for the note (note length: ${str.length})`,
     );
   }
 
   if (slice.endPos.offset > str.length) {
     throw new Error(
-      `Node position end offset (${slice.endPos.offset}) is out of bounds for the note (note length: ${str.length})`
+      `Node position end offset (${slice.endPos.offset}) is out of bounds for the note (note length: ${str.length})`,
     );
   }
 
