@@ -5,7 +5,6 @@ export interface CheckboxProps {
   onChange?: (node: StringSlice) => void;
   "data-startoffset"?: string;
   "data-endoffset"?: string;
-  [key: string]: unknown;
 }
 
 export function Checkbox(props: CheckboxProps) {

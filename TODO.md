@@ -18,7 +18,7 @@ Markdown things:
 
 - diagrams? mermaid/drawio and stuff, ideally - inline
 - anchors in the html
-- clickable checklist items
+- consistent font sizes and line heights
 
 More distant things to maybe design:
 

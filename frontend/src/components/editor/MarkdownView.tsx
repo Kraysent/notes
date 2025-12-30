@@ -26,6 +26,8 @@ import { Code } from "../markdown/Code";
 import { Pre } from "../markdown/Pre";
 import { Ul, Ol, Li } from "../markdown/List";
 import { Checkbox, type CheckboxProps } from "../markdown/Checkbox";
+import { BlockQuote } from "../markdown/BlockQuote";
+import { Hr } from "../markdown/Hr";
 import { getStringSlice, toggleCheckbox, type StringSlice } from "../../utils";
 import { heading } from "./handlers/heading";
 import { text } from "./handlers/text";
@@ -109,6 +111,8 @@ function MarkdownView(props: MarkdownViewProps) {
             input(props: CheckboxProps) {
               return <Checkbox {...props} onChange={handleCheckboxChange} />;
             },
+            blockquote: BlockQuote,
+            hr: Hr,
           },
         }),
     [props.note]

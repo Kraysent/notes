@@ -9,7 +9,6 @@ export interface LinkProps {
   "data-startoffset"?: string;
   "data-endoffset"?: string;
   onHover?: (node: StringSlice) => string;
-  [key: string]: unknown;
 }
 
 export function Link(props: LinkProps) {

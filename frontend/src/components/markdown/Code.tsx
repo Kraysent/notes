@@ -4,7 +4,6 @@ export interface CodeProps {
   inline?: boolean;
   className?: string;
   children: unknown;
-  [key: string]: unknown;
 }
 
 export function Code(props: CodeProps) {

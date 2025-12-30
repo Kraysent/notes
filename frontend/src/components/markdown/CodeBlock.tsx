@@ -7,7 +7,6 @@ import Button from "../core/Button";
 export interface CodeBlockProps {
   language: string;
   children: string;
-  [key: string]: unknown;
 }
 
 function CodeBlock(props: CodeBlockProps) {

@@ -4,7 +4,6 @@ import { isValidElement } from "react";
 export interface ListProps {
   children: ReactNode;
   ordered?: boolean;
-  [key: string]: unknown;
 }
 
 function hasCheckbox(children: ReactNode): boolean {
