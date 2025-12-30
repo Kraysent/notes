@@ -28,6 +28,7 @@ import { Ul, Ol, Li } from "../markdown/List";
 import { Checkbox, type CheckboxProps } from "../markdown/Checkbox";
 import { BlockQuote } from "../markdown/BlockQuote";
 import { Hr } from "../markdown/Hr";
+import { Table, TableRow, TableCell, TableHeader } from "../markdown/Table";
 import { getStringSlice, toggleCheckbox, type StringSlice } from "../../utils";
 import { heading } from "./handlers/heading";
 import { text } from "./handlers/text";
@@ -113,6 +114,10 @@ function MarkdownView(props: MarkdownViewProps) {
             },
             blockquote: BlockQuote,
             hr: Hr,
+            table: Table,
+            tr: TableRow,
+            td: TableCell,
+            th: TableHeader,
           },
         }),
     [props.note]
