@@ -1,23 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { StringSlice } from "../utils";
+import { StringSlice, type OriginalSlice } from "../utils";
 import settings from "../settings.json";
-
-export interface TooltipPositionData {
-  "data-startoffset"?: number;
-  "data-endoffset"?: number;
-}
 
 export interface UseTooltipProps {
   onHover?: (node: StringSlice) => string;
-  positionData: TooltipPositionData;
-  requirePositionData?: boolean;
+  positionData: OriginalSlice;
 }
 
-export function useTooltip({
-  onHover,
-  positionData,
-  requirePositionData = false,
-}: UseTooltipProps) {
+export function useTooltip({ onHover, positionData }: UseTooltipProps) {
   const [tooltipText, setTooltipText] = useState<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -32,27 +22,12 @@ export function useTooltip({
       return;
     }
 
-    if (
-      requirePositionData &&
-      (!positionData["data-startoffset"] || !positionData["data-endoffset"])
-    ) {
-      return;
-    }
-
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
     timeoutRef.current = setTimeout(() => {
-      const node = {
-        startPos: {
-          offset: Number(positionData["data-startoffset"]),
-        },
-        endPos: {
-          offset: Number(positionData["data-endoffset"]),
-        },
-      };
-
+      const node = StringSlice.fromOriginalSlice(positionData);
       const text = onHover(node);
       setTooltipText(text);
     }, settings.headerTooltipDelayMs);

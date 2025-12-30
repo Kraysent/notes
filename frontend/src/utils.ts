@@ -18,6 +18,11 @@ export interface Position {
   offset: number;
 }
 
+export interface OriginalSlice {
+  "data-startoffset": string;
+  "data-endoffset": string;
+}
+
 export class StringSlice {
   startPos: Position;
   endPos: Position;
@@ -25,6 +30,13 @@ export class StringSlice {
   constructor(startPos: Position, endPos: Position) {
     this.startPos = startPos;
     this.endPos = endPos;
+  }
+
+  static fromOriginalSlice<T extends OriginalSlice>(props: T): StringSlice {
+    return new StringSlice(
+      { offset: Number(props["data-startoffset"]) },
+      { offset: Number(props["data-endoffset"]) },
+    );
   }
 }
 

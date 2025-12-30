@@ -120,7 +120,7 @@ function MarkdownView(props: MarkdownViewProps) {
             th: TableHeader,
           },
         }),
-    [props.note]
+    [props.note],
   );
 
   const content = useMemo(() => {

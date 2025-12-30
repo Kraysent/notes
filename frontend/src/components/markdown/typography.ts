@@ -1,4 +1,4 @@
-export const markdownTypography = {
+export const mdTypography = {
   base: "text-base leading-relaxed",
 
   h1: "text-4xl font-bold leading-tight mt-0 mb-4",

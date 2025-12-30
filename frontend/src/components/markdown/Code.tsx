@@ -1,5 +1,5 @@
 import CodeBlock from "./CodeBlock";
-import { markdownTypography } from "./typography";
+import { mdTypography } from "./typography";
 
 export interface CodeProps {
   inline?: boolean;
@@ -26,7 +26,7 @@ export function Code(props: CodeProps) {
   const isInPre = !props.inline;
   const codeClassName = isInPre
     ? `bg-transparent p-0 font-normal ${props.className || ""}`
-    : `${markdownTypography.codeInline} bg-white/10 ${props.className || ""}`;
+    : `${mdTypography.codeInline} bg-white/10 ${props.className || ""}`;
 
   return (
     <code className={codeClassName} {...props}>

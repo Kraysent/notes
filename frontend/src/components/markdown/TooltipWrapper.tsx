@@ -1,12 +1,11 @@
 import { type ReactNode } from "react";
-import { useTooltip, type TooltipPositionData } from "../../hooks/useTooltip";
-import { type StringSlice } from "../../utils";
+import { useTooltip } from "../../hooks/useTooltip";
+import { type OriginalSlice, type StringSlice } from "../../utils";
 
 export interface TooltipWrapperProps {
   children: ReactNode;
   onHover?: (node: StringSlice) => string;
-  positionData: TooltipPositionData;
-  requirePositionData?: boolean;
+  positionData: OriginalSlice;
   wrapperClassName?: string;
   as?: "div" | "span";
   renderTooltip?: (tooltipText: string) => ReactNode;
@@ -24,7 +23,6 @@ export function TooltipWrapper({
   children,
   onHover,
   positionData,
-  requirePositionData = false,
   wrapperClassName = "relative group",
   as: WrapperElement = "div",
   renderTooltip = defaultTooltip,
@@ -32,7 +30,6 @@ export function TooltipWrapper({
   const { tooltipText, handleMouseEnter, handleMouseLeave } = useTooltip({
     onHover,
     positionData,
-    requirePositionData,
   });
 
   return (

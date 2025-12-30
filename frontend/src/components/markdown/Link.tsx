@@ -1,13 +1,11 @@
 import { type ReactNode } from "react";
 import LinkCore from "../core/Link";
-import { StringSlice } from "../../utils";
+import { StringSlice, type OriginalSlice } from "../../utils";
 import { useTooltip } from "../../hooks/useTooltip";
 
-export interface LinkProps {
+export interface LinkProps extends OriginalSlice {
   href?: string;
   children: ReactNode;
-  "data-startoffset"?: string;
-  "data-endoffset"?: string;
   onHover?: (node: StringSlice) => string;
 }
 
@@ -15,11 +13,7 @@ export function Link(props: LinkProps) {
   const { onHover, ...restProps } = props;
   const { tooltipText, handleMouseEnter, handleMouseLeave } = useTooltip({
     onHover,
-    positionData: {
-      "data-startoffset": Number(props["data-startoffset"]),
-      "data-endoffset": Number(props["data-endoffset"]),
-    },
-    requirePositionData: true,
+    positionData: props,
   });
 
   return (

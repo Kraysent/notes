@@ -1,12 +1,10 @@
 import { type ReactNode } from "react";
-import { StringSlice } from "../../utils";
+import { StringSlice, type OriginalSlice } from "../../utils";
 import { useTooltip } from "../../hooks/useTooltip";
-import { markdownTypography } from "./typography";
+import { mdTypography } from "./typography";
 
-export interface HeaderProps {
+export interface HeaderProps extends OriginalSlice {
   children: ReactNode;
-  "data-startoffset": string;
-  "data-endoffset": string;
   onHover?: (node: StringSlice) => string;
 }
 
@@ -18,10 +16,7 @@ function HeaderComponent(props: HeaderComponentProps) {
   const { onHover, typographyClass, ...restProps } = props;
   const { tooltipText, handleMouseEnter, handleMouseLeave } = useTooltip({
     onHover,
-    positionData: {
-      "data-startoffset": Number(props["data-startoffset"]),
-      "data-endoffset": Number(props["data-endoffset"]),
-    },
+    positionData: props,
   });
 
   return (
@@ -44,41 +39,36 @@ function HeaderComponent(props: HeaderComponentProps) {
 }
 
 export function H1(props: HeaderProps) {
-  return <HeaderComponent {...props} typographyClass={markdownTypography.h1} />;
+  return <HeaderComponent {...props} typographyClass={mdTypography.h1} />;
 }
 
 export function H2(props: HeaderProps) {
-  return <HeaderComponent {...props} typographyClass={markdownTypography.h2} />;
+  return <HeaderComponent {...props} typographyClass={mdTypography.h2} />;
 }
 
 export function H3(props: HeaderProps) {
-  return <HeaderComponent {...props} typographyClass={markdownTypography.h3} />;
+  return <HeaderComponent {...props} typographyClass={mdTypography.h3} />;
 }
 
 export function H4(props: HeaderProps) {
-  return <HeaderComponent {...props} typographyClass={markdownTypography.h4} />;
+  return <HeaderComponent {...props} typographyClass={mdTypography.h4} />;
 }
 
 export function H5(props: HeaderProps) {
-  return <HeaderComponent {...props} typographyClass={markdownTypography.h5} />;
+  return <HeaderComponent {...props} typographyClass={mdTypography.h5} />;
 }
 
 export function H6(props: HeaderProps) {
-  return <HeaderComponent {...props} typographyClass={markdownTypography.h6} />;
+  return <HeaderComponent {...props} typographyClass={mdTypography.h6} />;
 }
 
-export interface ParagraphProps {
+export interface ParagraphProps extends OriginalSlice {
   children: ReactNode;
-  "data-startoffset": string;
-  "data-endoffset": string;
   onHover?: (node: StringSlice) => string;
 }
 
 export function Paragraph(props: ParagraphProps) {
   return (
-    <HeaderComponent
-      {...props}
-      typographyClass={markdownTypography.paragraph}
-    />
+    <HeaderComponent {...props} typographyClass={mdTypography.paragraph} />
   );
 }

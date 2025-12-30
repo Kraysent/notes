@@ -1,10 +1,8 @@
-import { StringSlice } from "../../utils";
+import { StringSlice, type OriginalSlice } from "../../utils";
 
-export interface CheckboxProps {
+export interface CheckboxProps extends OriginalSlice {
   checked: boolean;
   onChange?: (node: StringSlice) => void;
-  "data-startoffset"?: string;
-  "data-endoffset"?: string;
 }
 
 export function Checkbox(props: CheckboxProps) {
@@ -14,14 +12,7 @@ export function Checkbox(props: CheckboxProps) {
       defaultChecked={props.checked}
       onChange={() => {
         if (props.onChange) {
-          const node: StringSlice = {
-            startPos: {
-              offset: Number(props["data-startoffset"]),
-            },
-            endPos: {
-              offset: Number(props["data-endoffset"]),
-            },
-          };
+          const node = StringSlice.fromOriginalSlice(props);
           props.onChange(node);
         }
       }}
