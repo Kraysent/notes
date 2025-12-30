@@ -15,6 +15,11 @@ export interface NoteEditorProps {
 function NoteEditor(props: NoteEditorProps) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>(SaveStatus.Saved);
 
+  function setNoteWithLog(note: string) {
+    console.log("setNote called with note:", note);
+    props.setNote(note);
+  }
+
   useEffect(() => {
     if (!props.title || !props.title.trim()) {
       setSaveStatus(SaveStatus.Unsaved);
@@ -49,9 +54,9 @@ function NoteEditor(props: NoteEditorProps) {
     <div className="flex-1 overflow-hidden relative">
       <div className="absolute top-4 right-4 z-10">{getStatusIcon()}</div>
       {props.viewMode === ViewMode.Raw ? (
-        <RawEditor note={props.note} setNote={props.setNote} />
+        <RawEditor note={props.note} setNote={setNoteWithLog} />
       ) : (
-        <MarkdownView note={props.note} setNote={props.setNote} />
+        <MarkdownView note={props.note} setNote={setNoteWithLog} />
       )}
     </div>
   );

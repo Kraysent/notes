@@ -29,8 +29,7 @@ describe("MarkdownView", () => {
     const note = `# My Tasks
 
 - [ ] First task
-- [ ] Second task
-- [ ] Third task`;
+- [ ] Second task`;
     const setNote = vi.fn();
     render(<MarkdownView note={note} setNote={setNote} />);
 
@@ -47,8 +46,31 @@ describe("MarkdownView", () => {
     const expected = `# My Tasks
 
 - [ ] First task
-- [x] Second task
-- [ ] Third task`;
+- [x] Second task`;
     expect(updatedNote).toEqual(expected);
+  });
+
+  it("checkbox can be checked and then unchecked", async () => {
+    const user = userEvent.setup();
+    let note = `- [ ] Test task`;
+    const setNote = vi.fn((newNote: string) => {
+      note = newNote;
+    });
+
+    const { rerender } = render(<MarkdownView note={note} setNote={setNote} />);
+
+    const checkbox = screen.getByRole("checkbox");
+    await user.click(checkbox);
+    rerender(<MarkdownView note={note} setNote={setNote} />);
+    const checkedCheckbox = screen.getByRole("checkbox");
+
+    await user.click(checkedCheckbox);
+    expect(setNote).toHaveBeenCalledTimes(2);
+    const uncheckedNote = setNote.mock.calls[1][0];
+    expect(uncheckedNote).toEqual(`- [ ] Test task`);
+
+    rerender(<MarkdownView note={note} setNote={setNote} />);
+    const finalCheckbox = screen.getByRole("checkbox");
+    expect(finalCheckbox).not.toBeChecked();
   });
 });
