@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { markdownTypography } from "./typography";
 
 export interface BlockQuoteProps {
   children: ReactNode;
@@ -6,10 +7,7 @@ export interface BlockQuoteProps {
 
 export function BlockQuote(props: BlockQuoteProps) {
   return (
-    <blockquote
-      className="mt-3 mb-3 pl-4 border-l-4 border-l-white/20"
-      {...props}
-    >
+    <blockquote className={markdownTypography.blockquote} {...props}>
       {props.children}
     </blockquote>
   );

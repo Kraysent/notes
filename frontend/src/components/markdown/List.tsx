@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { isValidElement } from "react";
+import { markdownTypography } from "./typography";
 
 export interface ListProps {
   children: ReactNode;
@@ -36,8 +37,8 @@ function hasCheckbox(children: ReactNode): boolean {
 export function Ul(props: ListProps) {
   const isChecklist = hasCheckbox(props.children);
   const className = isChecklist
-    ? "mt-3 mb-3 pl-[1.625em] list-none"
-    : "mt-3 mb-3 pl-[1.625em] list-disc";
+    ? `${markdownTypography.list} list-none`
+    : `${markdownTypography.list} list-disc`;
 
   return (
     <ul className={className} {...props}>
@@ -48,7 +49,9 @@ export function Ul(props: ListProps) {
 
 export function Li(props: ListProps) {
   const isChecklistItem = hasCheckbox(props.children);
-  const className = isChecklistItem ? "mt-1 mb-1 list-none" : "mt-1 mb-1";
+  const className = isChecklistItem
+    ? `${markdownTypography.listItem} list-none`
+    : markdownTypography.listItem;
 
   return (
     <li className={className} {...props}>
@@ -59,7 +62,7 @@ export function Li(props: ListProps) {
 
 export function Ol(props: ListProps) {
   return (
-    <ol className="mt-3 mb-3 pl-[1.625em] list-decimal" {...props}>
+    <ol className={`${markdownTypography.list} list-decimal`} {...props}>
       {props.children}
     </ol>
   );

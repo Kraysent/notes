@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { markdownTypography } from "./typography";
 
 export interface TableProps {
   children: ReactNode;
@@ -18,7 +19,10 @@ export interface TableHeaderProps {
 
 export function Table(props: TableProps) {
   return (
-    <table className="w-full my-3 border-collapse border-spacing-0" {...props}>
+    <table
+      className={`w-full ${markdownTypography.table} border-collapse border-spacing-0`}
+      {...props}
+    >
       {props.children}
     </table>
   );
@@ -30,7 +34,10 @@ export function TableRow(props: TableRowProps) {
 
 export function TableCell(props: TableCellProps) {
   return (
-    <td className="py-2 px-4 border border-white/20" {...props}>
+    <td
+      className={`${markdownTypography.tableCell} border border-white/20`}
+      {...props}
+    >
       {props.children}
     </td>
   );
@@ -39,7 +46,7 @@ export function TableCell(props: TableCellProps) {
 export function TableHeader(props: TableHeaderProps) {
   return (
     <th
-      className="py-2 px-4 border border-white/20 font-semibold bg-white/5"
+      className={`${markdownTypography.tableHeader} border border-white/20 bg-white/5`}
       {...props}
     >
       {props.children}
