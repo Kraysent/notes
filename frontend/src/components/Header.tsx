@@ -122,7 +122,7 @@ function Header({
         <Button
           onClick={() =>
             onViewModeChange(
-              viewMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw,
+              viewMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw
             )
           }
           tooltipKey={
