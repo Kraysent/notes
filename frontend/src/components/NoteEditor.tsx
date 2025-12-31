@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { MdOutlineAutorenew, MdCheck, MdClear } from "react-icons/md";
 import { ViewMode, SaveStatus } from "../types";
-import { saveNote } from "../api";
+import {
+  client,
+} from "../api";
 import RawEditor from "./editor/RawEditor";
 import MarkdownView from "./editor/MarkdownView";
+import { saveNoteEndpointApiNoteCodePut } from "../client";
 
 export interface NoteEditorProps {
   note: string;
@@ -33,8 +36,18 @@ function NoteEditor(props: NoteEditorProps) {
     }
 
     setSaveStatus(SaveStatus.Saving);
-    saveNote(props.code, props.title, props.note)
-      .then(() => {
+    saveNoteEndpointApiNoteCodePut({
+      client,
+      path: { code: props.code },
+      body: {
+        title: props.title,
+        content: props.note,
+      },
+    })
+      .then((response) => {
+        if (response.error || !response.data) {
+          throw new Error("Failed to save note");
+        }
         setSaveStatus(SaveStatus.Saved);
       })
       .catch((error) => {

@@ -3,10 +3,16 @@ import Header from "./components/Header";
 import NoteEditor from "./components/NoteEditor";
 import NotesSidebar, { type NotesSidebarRef } from "./components/NotesSidebar";
 import { ViewMode } from "./types";
-import { saveNote, updateTitle, getNote, downloadNote } from "./api";
+import { client } from "./api";
 import { getKeybinding, matchesKeybinding } from "./keybindings";
 import { generateSlug } from "./utils";
 import settings from "./settings.json";
+import {
+  downloadNoteEndpointApiNoteCodeDownloadGet,
+  getNoteEndpointApiNoteCodeGet,
+  saveNoteEndpointApiNoteCodePut,
+  updateTitleEndpointApiNoteTitlePatch,
+} from "./client";
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Raw);
@@ -40,9 +46,16 @@ function App() {
     const noteMatch = pathname.match(/^\/note\/(.+)$/);
     if (noteMatch) {
       const noteCode = decodeURIComponent(noteMatch[1]);
-      getNote(noteCode)
-        .then((loadedNote) => {
-          switchNote(loadedNote.code, loadedNote.title, loadedNote.content);
+      getNoteEndpointApiNoteCodeGet({ client, path: { code: noteCode } })
+        .then((response) => {
+          if (response.error || !response.data) {
+            throw new Error("Failed to get note");
+          }
+          switchNote(
+            response.data.code,
+            response.data.title,
+            response.data.content
+          );
         })
         .catch((error) => {
           console.error("Failed to load note:", error);
@@ -80,7 +93,7 @@ function App() {
       if (viewToggleBinding && matchesKeybinding(e, viewToggleBinding)) {
         e.preventDefault();
         setViewMode((prevMode) =>
-          prevMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw,
+          prevMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw
         );
       }
     }
@@ -89,7 +102,7 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  async function handleTitleSubmit(submittedTitle: string) {
+  function handleTitleSubmit(submittedTitle: string) {
     if (!submittedTitle.trim()) {
       return;
     }
@@ -97,13 +110,39 @@ function App() {
     const newCode = generateSlug(submittedTitle);
 
     if (code && code.trim()) {
-      await updateTitle(code, newCode, submittedTitle).catch((error) => {
-        console.error("Failed to update title:", error);
-      });
+      updateTitleEndpointApiNoteTitlePatch({
+        client,
+        body: {
+          old_code: code,
+          new_code: newCode,
+          new_title: submittedTitle,
+        },
+      })
+        .then((response) => {
+          if (response.error || !response.data) {
+            throw new Error("Failed to update title");
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to update title:", error);
+        });
     } else {
-      await saveNote(newCode, submittedTitle, note).catch((error) => {
-        console.error("Failed to save note:", error);
-      });
+      saveNoteEndpointApiNoteCodePut({
+        client,
+        path: { code: newCode },
+        body: {
+          title: submittedTitle,
+          content: note,
+        },
+      })
+        .then((response) => {
+          if (response.error || !response.data) {
+            throw new Error("Failed to save note");
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to save note:", error);
+        });
     }
     setCode(newCode);
     setTitle(submittedTitle);
@@ -111,9 +150,16 @@ function App() {
   }
 
   function handleNoteClick(noteCode: string) {
-    getNote(noteCode)
-      .then((loadedNote) => {
-        switchNote(loadedNote.code, loadedNote.title, loadedNote.content);
+    getNoteEndpointApiNoteCodeGet({ client, path: { code: noteCode } })
+      .then((response) => {
+        if (response.error || !response.data) {
+          throw new Error("Failed to get note");
+        }
+        switchNote(
+          response.data.code,
+          response.data.title,
+          response.data.content
+        );
       })
       .catch((error) => {
         console.error("Failed to load note:", error);
@@ -126,9 +172,26 @@ function App() {
 
   function handleDownloadNote() {
     if (code && code.trim()) {
-      downloadNote(code).catch((error) => {
-        console.error("Failed to download note:", error);
-      });
+      downloadNoteEndpointApiNoteCodeDownloadGet({ client, path: { code } })
+        .then((response) => {
+          if (response.error || !response.response) {
+            throw new Error("Failed to download note");
+          }
+          return response.response.blob();
+        })
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${code}.md`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        })
+        .catch((error) => {
+          console.error("Failed to download note:", error);
+        });
     }
   }
 

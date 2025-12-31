@@ -5,11 +5,14 @@ import {
   forwardRef,
   useCallback,
 } from "react";
-import { listNotes, saveNote } from "../api";
-import type { Note } from "../api";
+import { client, type Note } from "../api";
 import Text, { TextSize, TextColor } from "./core/Text";
 import Button from "./core/Button";
 import { MdDelete } from "react-icons/md";
+import {
+  listNotesEndpointApiNotesGet,
+  saveNoteEndpointApiNoteCodePut,
+} from "../client";
 
 interface NotesListProps {
   onNoteClick: (code: string) => void;
@@ -22,16 +25,26 @@ export interface NotesListRef {
 
 function NotesList(
   { onNoteClick, searchQuery }: NotesListProps,
-  ref: React.Ref<NotesListRef>,
+  ref: React.Ref<NotesListRef>
 ) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(() => {
     setLoading(true);
-    listNotes(1, 50, searchQuery || undefined)
+    listNotesEndpointApiNotesGet({
+      client,
+      query: {
+        page: 1,
+        page_size: 50,
+        query: searchQuery || null,
+      },
+    })
       .then((response) => {
-        setNotes(response.notes);
+        if (response.error || !response.data) {
+          throw new Error("Failed to list notes");
+        }
+        setNotes(response.data.notes);
         setLoading(false);
       })
       .catch((error) => {
@@ -45,7 +58,7 @@ function NotesList(
     () => ({
       refresh,
     }),
-    [refresh],
+    [refresh]
   );
 
   useEffect(() => {
@@ -65,7 +78,18 @@ function NotesList(
 
   async function handleDelete(note: Note) {
     try {
-      await saveNote(note.code, undefined, undefined, "removed");
+      const response = await saveNoteEndpointApiNoteCodePut({
+        client,
+        path: { code: note.code },
+        body: {
+          title: null,
+          content: null,
+          status: "removed",
+        },
+      });
+      if (response.error || !response.data) {
+        throw new Error("Failed to delete note");
+      }
       refresh();
     } catch (error) {
       console.error("Failed to delete note:", error);
