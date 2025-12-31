@@ -1,7 +1,4 @@
-import {
-  type NoteResponse,
-  type NotesListResponse,
-} from "./client";
+import { type NoteResponse, type NotesListResponse } from "./client";
 import { createClient } from "./client/client";
 
 const API_BASE_URL =

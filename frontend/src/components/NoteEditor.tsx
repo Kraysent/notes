@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { MdOutlineAutorenew, MdCheck, MdClear } from "react-icons/md";
 import { ViewMode, SaveStatus } from "../types";
-import {
-  client,
-} from "../api";
+import { client } from "../api";
 import RawEditor from "./editor/RawEditor";
 import MarkdownView from "./editor/MarkdownView";
 import { saveNoteEndpointApiNoteCodePut } from "../client";

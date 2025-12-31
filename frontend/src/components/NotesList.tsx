@@ -25,7 +25,7 @@ export interface NotesListRef {
 
 function NotesList(
   { onNoteClick, searchQuery }: NotesListProps,
-  ref: React.Ref<NotesListRef>
+  ref: React.Ref<NotesListRef>,
 ) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +58,7 @@ function NotesList(
     () => ({
       refresh,
     }),
-    [refresh]
+    [refresh],
   );
 
   useEffect(() => {

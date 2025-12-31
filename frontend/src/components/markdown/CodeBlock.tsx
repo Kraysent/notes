@@ -12,7 +12,7 @@ export interface CodeBlockProps {
 function CodeBlock(props: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
   const codeContent = String(props.children).replace(/\n$/, "");
-  const { language, children, ...restProps } = props;
+  const { language, ...restProps } = props;
 
   async function handleCopy() {
     try {

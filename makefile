@@ -8,16 +8,16 @@ run:
 	uv run python main.py --path-prefix ./data
 
 test:
-	uv run ruff check .
-	uv run ruff format --check .
-	uv run pytest backend/tests/
-	cd frontend && yarn prettier --check .
-	cd frontend && yarn lint
-	cd frontend && yarn vitest run
-
+	uv run ruff check --quiet .
+	uv run ruff format --check --quiet .
+	uv run pytest -qq backend/tests/
+	cd frontend && yarn --silent tsc --noEmit
+	cd frontend && yarn --silent prettier --log-level silent --check .
+	cd frontend && yarn --silent lint
+	cd frontend && yarn --silent vitest run
 
 fix:
-	uv run ruff check --fix --unsafe-fixes .
-	uv run ruff format .
-	cd frontend && yarn prettier --write .
-	cd frontend && yarn lint --fix
+	uv run ruff format --quiet .
+	uv run ruff check --fix --unsafe-fixes --quiet .
+	cd frontend && yarn --silent prettier --write --list-different .
+	cd frontend && yarn --silent lint --fix

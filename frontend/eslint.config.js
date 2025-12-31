@@ -4,9 +4,10 @@ import eslintConfigPrettier from "eslint-config-prettier/flat";
 
 export default tseslint.config(eslintConfigPrettier, {
   extends: [eslint.configs.recommended, tseslint.configs.recommended],
+  ignores: ["src/client/**"],
   rules: {
     "@typescript-eslint/array-type": "error",
-    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
     "array-callback-return": "error",
     "no-await-in-loop": "error",
     "no-constructor-return": "error",

@@ -3,9 +3,10 @@ from pathlib import Path
 
 import click
 import uvicorn
-from fastapi import APIRoute, FastAPI, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
+from fastapi.routing import APIRoute
 from pydantic_settings import BaseSettings
 
 from backend.database import run_migrations
@@ -83,11 +84,41 @@ def get_app(app_settings: Settings | None = None, cors_origins: str | None = Non
         return serve_static(request, full_path, static_path)
 
     app.add_api_route("/ping", ping_endpoint, methods=["GET"], tags=["system"], name="ping")
-    app.add_api_route("/api/note/{code}", get_note_endpoint, methods=["GET"], response_model=NoteResponse, tags=["notes"], name="get_note")
-    app.add_api_route("/api/note/{code}", save_note_endpoint, methods=["PUT"], response_model=NoteResponse, tags=["notes"], name="save_note")
-    app.add_api_route("/api/note/title", update_title_endpoint, methods=["PATCH"], response_model=NoteResponse, tags=["notes"], name="update_title")
-    app.add_api_route("/api/notes", list_notes_endpoint, methods=["GET"], response_model=NotesListResponse, tags=["notes"], name="list_notes")
-    app.add_api_route("/api/note/{code}/download", download_note_endpoint, methods=["GET"], tags=["notes"], name="download_note")
+    app.add_api_route(
+        "/api/note/{code}",
+        get_note_endpoint,
+        methods=["GET"],
+        response_model=NoteResponse,
+        tags=["notes"],
+        name="get_note",
+    )
+    app.add_api_route(
+        "/api/note/{code}",
+        save_note_endpoint,
+        methods=["PUT"],
+        response_model=NoteResponse,
+        tags=["notes"],
+        name="save_note",
+    )
+    app.add_api_route(
+        "/api/note/title",
+        update_title_endpoint,
+        methods=["PATCH"],
+        response_model=NoteResponse,
+        tags=["notes"],
+        name="update_title",
+    )
+    app.add_api_route(
+        "/api/notes",
+        list_notes_endpoint,
+        methods=["GET"],
+        response_model=NotesListResponse,
+        tags=["notes"],
+        name="list_notes",
+    )
+    app.add_api_route(
+        "/api/note/{code}/download", download_note_endpoint, methods=["GET"], tags=["notes"], name="download_note"
+    )
     app.add_api_route("/{full_path:path}", serve_static_endpoint, methods=["GET"], tags=["static"], name="serve_static")
 
     return app

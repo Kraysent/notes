@@ -54,7 +54,7 @@ function App() {
           switchNote(
             response.data.code,
             response.data.title,
-            response.data.content
+            response.data.content,
           );
         })
         .catch((error) => {
@@ -93,7 +93,7 @@ function App() {
       if (viewToggleBinding && matchesKeybinding(e, viewToggleBinding)) {
         e.preventDefault();
         setViewMode((prevMode) =>
-          prevMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw
+          prevMode === ViewMode.Raw ? ViewMode.Markdown : ViewMode.Raw,
         );
       }
     }
@@ -158,7 +158,7 @@ function App() {
         switchNote(
           response.data.code,
           response.data.title,
-          response.data.content
+          response.data.content,
         );
       })
       .catch((error) => {
