@@ -18,18 +18,22 @@ def _normalize_timestamp(ts: str) -> str:
         return dt.isoformat()
 
 
-def save_note(note_update: NoteUpdate, database_path: Path) -> NoteResponse:
+def save_note(code: str, note_update: NoteUpdate, database_path: Path) -> NoteResponse:
     conn = get_db_connection(database_path)
     cursor = conn.cursor()
 
     now = datetime.now(UTC).isoformat()
 
-    cursor.execute("SELECT * FROM notes WHERE title = ?", (note_update.title,))
+    cursor.execute("SELECT * FROM notes WHERE code = ?", (code,))
     existing_note = cursor.fetchone()
 
     if existing_note:
         update_parts = ["updated_at = ?"]
         update_values = [now]
+
+        if note_update.title is not None:
+            update_parts.append("title = ?")
+            update_values.append(note_update.title)
 
         if note_update.content is not None:
             update_parts.append("content = ?")
@@ -39,26 +43,29 @@ def save_note(note_update: NoteUpdate, database_path: Path) -> NoteResponse:
             update_parts.append("status = ?")
             update_values.append(note_update.status)
 
-        update_values.append(note_update.title)
+        update_values.append(code)
         cursor.execute(
-            f"UPDATE notes SET {', '.join(update_parts)} WHERE title = ?",
+            f"UPDATE notes SET {', '.join(update_parts)} WHERE code = ?",
             update_values,
         )
     else:
+        if note_update.title is None:
+            raise HTTPException(status_code=400, detail="Title is required when creating a new note")
         content = note_update.content if note_update.content is not None else ""
         status = note_update.status if note_update.status is not None else "active"
         cursor.execute(
-            """INSERT INTO notes (title, content, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?)""",
-            (note_update.title, content, status, now, now),
+            """INSERT INTO notes (code, title, content, status, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (code, note_update.title, content, status, now, now),
         )
 
     conn.commit()
-    cursor.execute("SELECT * FROM notes WHERE title = ?", (note_update.title,))
+    cursor.execute("SELECT * FROM notes WHERE code = ?", (code,))
     saved_note = cursor.fetchone()
     conn.close()
 
     return NoteResponse(
+        code=saved_note["code"],
         title=saved_note["title"],
         content=saved_note["content"],
         created_at=_normalize_timestamp(saved_note["created_at"]),
@@ -72,20 +79,21 @@ def update_title(title_update: TitleUpdate, database_path: Path) -> NoteResponse
     cursor = conn.cursor()
 
     cursor.execute(
-        "UPDATE notes SET title = ?, updated_at = ? WHERE title = ?",
-        (title_update.new_title, datetime.now(UTC).isoformat(), title_update.old_title),
+        "UPDATE notes SET code = ?, title = ?, updated_at = ? WHERE code = ?",
+        (title_update.new_code, title_update.new_title, datetime.now(UTC).isoformat(), title_update.old_code),
     )
 
     if cursor.rowcount == 0:
         conn.close()
-        raise HTTPException(status_code=400, detail=f"No note found with title '{title_update.old_title}'")
+        raise HTTPException(status_code=400, detail=f"No note found with code '{title_update.old_code}'")
 
     conn.commit()
-    cursor.execute("SELECT * FROM notes WHERE title = ?", (title_update.new_title,))
+    cursor.execute("SELECT * FROM notes WHERE code = ?", (title_update.new_code,))
     updated_note = cursor.fetchone()
     conn.close()
 
     return NoteResponse(
+        code=updated_note["code"],
         title=updated_note["title"],
         content=updated_note["content"],
         created_at=_normalize_timestamp(updated_note["created_at"]),
@@ -94,18 +102,19 @@ def update_title(title_update: TitleUpdate, database_path: Path) -> NoteResponse
     )
 
 
-def get_note_by_title(title: str, database_path: Path) -> NoteResponse:
+def get_note_by_code(code: str, database_path: Path) -> NoteResponse:
     conn = get_db_connection(database_path)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM notes WHERE title = ? AND status != 'removed'", (title,))
+    cursor.execute("SELECT * FROM notes WHERE code = ? AND status != 'removed'", (code,))
     note = cursor.fetchone()
     conn.close()
 
     if note is None:
-        raise HTTPException(status_code=404, detail=f"No note found with title '{title}'")
+        raise HTTPException(status_code=404, detail=f"No note found with code '{code}'")
 
     return NoteResponse(
+        code=note["code"],
         title=note["title"],
         content=note["content"],
         created_at=_normalize_timestamp(note["created_at"]),
@@ -152,6 +161,7 @@ def list_notes(page: int, page_size: int, database_path: Path, query: str | None
 
     notes = [
         NoteResponse(
+            code=row["code"],
             title=row["title"],
             content=row["content"],
             created_at=_normalize_timestamp(row["created_at"]),
@@ -169,15 +179,15 @@ def list_notes(page: int, page_size: int, database_path: Path, query: str | None
     )
 
 
-def get_note_content_for_download(title: str, database_path: Path) -> str:
+def get_note_content_for_download(code: str, database_path: Path) -> str:
     conn = get_db_connection(database_path)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT content FROM notes WHERE title = ? AND status != 'removed'", (title,))
+    cursor.execute("SELECT content FROM notes WHERE code = ? AND status != 'removed'", (code,))
     note = cursor.fetchone()
     conn.close()
 
     if note is None:
-        raise HTTPException(status_code=404, detail=f"No note found with title '{title}'")
+        raise HTTPException(status_code=404, detail=f"No note found with code '{code}'")
 
     return note["content"]

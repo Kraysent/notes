@@ -12,7 +12,7 @@ import Button from "./core/Button";
 import { MdDelete } from "react-icons/md";
 
 interface NotesListProps {
-  onNoteClick: (title: string) => void;
+  onNoteClick: (code: string) => void;
   searchQuery: string;
 }
 
@@ -63,9 +63,9 @@ function NotesList(
     });
   }
 
-  async function handleDelete(title: string) {
+  async function handleDelete(note: Note) {
     try {
-      await saveNote(title, undefined, "removed");
+      await saveNote(note.code, undefined, undefined, "removed");
       refresh();
     } catch (error) {
       console.error("Failed to delete note:", error);
@@ -84,11 +84,11 @@ function NotesList(
     <div className="divide-y divide-gray-700">
       {notes.map((note) => (
         <div
-          key={note.title}
+          key={note.code}
           className="w-full flex items-center group hover:bg-gray-800 transition-colors"
         >
           <button
-            onClick={() => onNoteClick(note.title)}
+            onClick={() => onNoteClick(note.code)}
             className="flex-1 text-left p-1 pl-4"
           >
             <Text
@@ -106,7 +106,7 @@ function NotesList(
             onClick={(e) => e.stopPropagation()}
             className="mr-2 opacity-0 group-hover:opacity-100 transition-opacity"
           >
-            <Button onClick={() => handleDelete(note.title)}>
+            <Button onClick={() => handleDelete(note)}>
               <MdDelete size={20} />
             </Button>
           </div>

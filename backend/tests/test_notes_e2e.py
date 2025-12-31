@@ -33,15 +33,17 @@ def client(temp_db: Path) -> TestClient:
 def test_create_note_and_get_note(client: TestClient) -> None:
     note_data = {"title": "Test Note", "content": "This is a test note"}
 
-    create_response = client.put("/api/note", json=note_data)
+    create_response = client.put("/api/note/test-note", json=note_data)
     assert create_response.status_code == 200
     created_note = create_response.json()
+    assert created_note["code"] == "test-note"
     assert created_note["title"] == "Test Note"
     assert created_note["content"] == "This is a test note"
 
-    get_response = client.get("/api/note", params={"title": "Test Note"})
+    get_response = client.get("/api/note/test-note")
     assert get_response.status_code == 200
     retrieved_note = get_response.json()
+    assert retrieved_note["code"] == "test-note"
     assert retrieved_note["title"] == "Test Note"
     assert retrieved_note["content"] == "This is a test note"
 
@@ -49,20 +51,20 @@ def test_create_note_and_get_note(client: TestClient) -> None:
 def test_create_note_update_content_and_get_note(client: TestClient) -> None:
     note_data = {"title": "Update Test Note", "content": "Original content"}
 
-    create_response = client.put("/api/note", json=note_data)
+    create_response = client.put("/api/note/update-test-note", json=note_data)
     assert create_response.status_code == 200
     created_note = create_response.json()
     assert created_note["content"] == "Original content"
 
     update_data = {"title": "Update Test Note", "content": "Updated content"}
 
-    update_response = client.put("/api/note", json=update_data)
+    update_response = client.put("/api/note/update-test-note", json=update_data)
     assert update_response.status_code == 200
     updated_note = update_response.json()
     assert updated_note["title"] == "Update Test Note"
     assert updated_note["content"] == "Updated content"
 
-    get_response = client.get("/api/note", params={"title": "Update Test Note"})
+    get_response = client.get("/api/note/update-test-note")
     assert get_response.status_code == 200
     retrieved_note = get_response.json()
     assert retrieved_note["content"] == "Updated content"
@@ -71,24 +73,26 @@ def test_create_note_update_content_and_get_note(client: TestClient) -> None:
 def test_create_note_change_title_and_get_note(client: TestClient) -> None:
     note_data = {"title": "Old Title", "content": "Note content"}
 
-    create_response = client.put("/api/note", json=note_data)
+    create_response = client.put("/api/note/old-title", json=note_data)
     assert create_response.status_code == 200
     create_response.json()
 
-    title_update_data = {"old_title": "Old Title", "new_title": "New Title"}
+    title_update_data = {"old_code": "old-title", "new_code": "new-title", "new_title": "New Title"}
 
     update_title_response = client.patch("/api/note/title", json=title_update_data)
     assert update_title_response.status_code == 200
     updated_note = update_title_response.json()
+    assert updated_note["code"] == "new-title"
     assert updated_note["title"] == "New Title"
 
-    get_old_title_response = client.get("/api/note", params={"title": "Old Title"})
-    assert get_old_title_response.status_code == 404
-    assert "No note found" in get_old_title_response.json()["detail"]
+    get_old_code_response = client.get("/api/note/old-title")
+    assert get_old_code_response.status_code == 404
+    assert "No note found" in get_old_code_response.json()["detail"]
 
-    get_new_title_response = client.get("/api/note", params={"title": "New Title"})
-    assert get_new_title_response.status_code == 200
-    retrieved_note = get_new_title_response.json()
+    get_new_code_response = client.get("/api/note/new-title")
+    assert get_new_code_response.status_code == 200
+    retrieved_note = get_new_code_response.json()
+    assert retrieved_note["code"] == "new-title"
     assert retrieved_note["title"] == "New Title"
     assert retrieved_note["content"] == "Note content"
 
@@ -97,10 +101,10 @@ def test_search_notes(client: TestClient) -> None:
     note1_data = {"title": "Python Tutorial", "content": "Learn Python programming"}
     note2_data = {"title": "JavaScript Guide", "content": "Learn JavaScript basics"}
 
-    create_response1 = client.put("/api/note", json=note1_data)
+    create_response1 = client.put("/api/note/python-tutorial", json=note1_data)
     assert create_response1.status_code == 200
 
-    create_response2 = client.put("/api/note", json=note2_data)
+    create_response2 = client.put("/api/note/javascript-guide", json=note2_data)
     assert create_response2.status_code == 200
 
     list_response = client.get("/api/notes", params={"page": 1, "page_size": 50})
@@ -130,19 +134,19 @@ def test_search_notes(client: TestClient) -> None:
 def test_remove_note(client: TestClient) -> None:
     note_data = {"title": "Note to Remove", "content": "This note will be removed"}
 
-    create_response = client.put("/api/note", json=note_data)
+    create_response = client.put("/api/note/note-to-remove", json=note_data)
     assert create_response.status_code == 200
     created_note = create_response.json()
     assert created_note["title"] == "Note to Remove"
     assert created_note["status"] == "active"
 
-    get_response = client.get("/api/note", params={"title": "Note to Remove"})
+    get_response = client.get("/api/note/note-to-remove")
     assert get_response.status_code == 200
     retrieved_note = get_response.json()
     assert retrieved_note["title"] == "Note to Remove"
 
-    remove_data = {"title": "Note to Remove", "status": "removed"}
-    remove_response = client.put("/api/note", json=remove_data)
+    remove_data = {"status": "removed"}
+    remove_response = client.put("/api/note/note-to-remove", json=remove_data)
     assert remove_response.status_code == 200
     removed_note = remove_response.json()
     assert removed_note["status"] == "removed"
@@ -153,7 +157,7 @@ def test_remove_note(client: TestClient) -> None:
     note_titles = {note["title"] for note in list_data["notes"]}
     assert "Note to Remove" not in note_titles
 
-    get_removed_response = client.get("/api/note", params={"title": "Note to Remove"})
+    get_removed_response = client.get("/api/note/note-to-remove")
     assert get_removed_response.status_code == 404
     assert "No note found" in get_removed_response.json()["detail"]
 
@@ -180,16 +184,16 @@ def hello():
 """
     note_data = {"title": "Download Test Note", "content": note_content}
 
-    create_response = client.put("/api/note", json=note_data)
+    create_response = client.put("/api/note/download-test-note", json=note_data)
     assert create_response.status_code == 200
     created_note = create_response.json()
     assert created_note["title"] == "Download Test Note"
     assert created_note["content"] == note_content
 
-    download_response = client.get("/api/note/download", params={"title": "Download Test Note"})
+    download_response = client.get("/api/note/download-test-note/download")
     assert download_response.status_code == 200
     assert download_response.headers["content-type"] == "text/markdown; charset=utf-8"
-    assert 'attachment; filename="Download Test Note.md"' in download_response.headers["content-disposition"]
+    assert 'attachment; filename="download-test-note.md"' in download_response.headers["content-disposition"]
 
     downloaded_content = download_response.text
     assert downloaded_content == note_content

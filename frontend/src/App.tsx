@@ -5,12 +5,14 @@ import NotesSidebar, { type NotesSidebarRef } from "./components/NotesSidebar";
 import { ViewMode } from "./types";
 import { saveNote, updateTitle, getNote, downloadNote } from "./api";
 import { getKeybinding, matchesKeybinding } from "./keybindings";
+import { generateSlug } from "./utils";
 import settings from "./settings.json";
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Raw);
   const [note, setNote] = useState("");
   const [title, setTitle] = useState("");
+  const [code, setCode] = useState("");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     const saved = localStorage.getItem("sidebarCollapsed");
     return saved !== null
@@ -20,24 +22,27 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const sidebarRef = useRef<NotesSidebarRef>(null);
 
-  function switchNote(title: string, content: string) {
+  function switchNote(code: string, title: string, content: string) {
+    setCode(code);
     setTitle(title);
     setNote(content);
   }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const titleParam = params.get("title");
     const queryParam = params.get("query");
 
     if (queryParam) {
       setSearchQuery(queryParam);
     }
 
-    if (titleParam) {
-      getNote(titleParam)
+    const pathname = window.location.pathname;
+    const noteMatch = pathname.match(/^\/note\/(.+)$/);
+    if (noteMatch) {
+      const noteCode = decodeURIComponent(noteMatch[1]);
+      getNote(noteCode)
         .then((loadedNote) => {
-          switchNote(loadedNote.title, loadedNote.content);
+          switchNote(loadedNote.code, loadedNote.title, loadedNote.content);
         })
         .catch((error) => {
           console.error("Failed to load note:", error);
@@ -47,13 +52,13 @@ function App() {
 
   useEffect(() => {
     const url = new URL(window.location.href);
-    if (title && title.trim()) {
-      url.searchParams.set("title", title.trim());
+    if (code && code.trim()) {
+      url.pathname = `/note/${encodeURIComponent(code)}`;
     } else {
-      url.searchParams.delete("title");
+      url.pathname = "/";
     }
     window.history.replaceState({}, "", url.toString());
-  }, [title]);
+  }, [code]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -89,23 +94,26 @@ function App() {
       return;
     }
 
-    if (title && title.trim()) {
-      await updateTitle(submittedTitle, title).catch((error) => {
+    const newCode = generateSlug(submittedTitle);
+
+    if (code && code.trim()) {
+      await updateTitle(code, newCode, submittedTitle).catch((error) => {
         console.error("Failed to update title:", error);
       });
     } else {
-      await saveNote(submittedTitle, note).catch((error) => {
+      await saveNote(newCode, submittedTitle, note).catch((error) => {
         console.error("Failed to save note:", error);
       });
     }
+    setCode(newCode);
     setTitle(submittedTitle);
     sidebarRef.current?.refresh();
   }
 
-  function handleNoteClick(noteTitle: string) {
-    getNote(noteTitle)
+  function handleNoteClick(noteCode: string) {
+    getNote(noteCode)
       .then((loadedNote) => {
-        switchNote(loadedNote.title, loadedNote.content);
+        switchNote(loadedNote.code, loadedNote.title, loadedNote.content);
       })
       .catch((error) => {
         console.error("Failed to load note:", error);
@@ -113,12 +121,12 @@ function App() {
   }
 
   function handleNewNote() {
-    switchNote("", "");
+    switchNote("", "", "");
   }
 
   function handleDownloadNote() {
-    if (title && title.trim()) {
-      downloadNote(title).catch((error) => {
+    if (code && code.trim()) {
+      downloadNote(code).catch((error) => {
         console.error("Failed to download note:", error);
       });
     }
@@ -141,6 +149,7 @@ function App() {
           note={note}
           setNote={setNote}
           viewMode={viewMode}
+          code={code}
           title={title}
         />
         {!isSidebarCollapsed && (

@@ -3,6 +3,7 @@ const API_BASE_URL =
   (import.meta.env.DEV ? "http://localhost:8000" : "");
 
 export interface Note {
+  code: string;
   title: string;
   content: string;
   created_at: string;
@@ -11,39 +12,50 @@ export interface Note {
 }
 
 export async function saveNote(
-  title: string,
+  code: string,
+  title?: string,
   content?: string,
-  status?: string,
+  status?: string
 ): Promise<Note> {
-  const body: { title: string; content?: string; status?: string } = { title };
+  const body: {
+    title?: string;
+    content?: string;
+    status?: string;
+  } = {};
+  if (title !== undefined) {
+    body.title = title;
+  }
   if (content !== undefined) {
     body.content = content;
   }
   if (status !== undefined) {
     body.status = status;
   }
-  const response = await fetch(`${API_BASE_URL}/api/note`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/api/note/${encodeURIComponent(code)}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    }
+  );
   if (!response.ok) {
     throw new Error("Failed to save note");
   }
   return response.json();
 }
 
-export async function getNote(title: string): Promise<Note> {
+export async function getNote(code: string): Promise<Note> {
   const response = await fetch(
-    `${API_BASE_URL}/api/note?title=${encodeURIComponent(title)}`,
+    `${API_BASE_URL}/api/note/${encodeURIComponent(code)}`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    },
+    }
   );
   if (!response.ok) {
     throw new Error("Failed to get note");
@@ -52,15 +64,20 @@ export async function getNote(title: string): Promise<Note> {
 }
 
 export async function updateTitle(
-  newTitle: string,
-  oldTitle: string,
+  oldCode: string,
+  newCode: string,
+  newTitle: string
 ): Promise<Note> {
   const response = await fetch(`${API_BASE_URL}/api/note/title`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ new_title: newTitle, old_title: oldTitle }),
+    body: JSON.stringify({
+      old_code: oldCode,
+      new_code: newCode,
+      new_title: newTitle,
+    }),
   });
   if (!response.ok) {
     throw new Error("Failed to update title");
@@ -78,7 +95,7 @@ export interface NotesListResponse {
 export async function listNotes(
   page: number = 1,
   pageSize: number = 50,
-  query?: string,
+  query?: string
 ): Promise<NotesListResponse> {
   const params = new URLSearchParams({
     page: String(page),
@@ -94,7 +111,7 @@ export async function listNotes(
       headers: {
         "Content-Type": "application/json",
       },
-    },
+    }
   );
   if (!response.ok) {
     throw new Error("Failed to list notes");
@@ -102,12 +119,12 @@ export async function listNotes(
   return response.json();
 }
 
-export async function downloadNote(title: string): Promise<void> {
+export async function downloadNote(code: string): Promise<void> {
   const response = await fetch(
-    `${API_BASE_URL}/api/note/download?title=${encodeURIComponent(title)}`,
+    `${API_BASE_URL}/api/note/${encodeURIComponent(code)}/download`,
     {
       method: "GET",
-    },
+    }
   );
   if (!response.ok) {
     throw new Error("Failed to download note");
@@ -116,7 +133,7 @@ export async function downloadNote(title: string): Promise<void> {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${title}.md`;
+  a.download = `${code}.md`;
   document.body.appendChild(a);
   a.click();
   window.URL.revokeObjectURL(url);

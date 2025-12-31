@@ -9,7 +9,7 @@ from fastapi.responses import FileResponse, Response
 from pydantic_settings import BaseSettings
 
 from backend.database import run_migrations
-from backend.handlers.notes import get_note_by_title, get_note_content_for_download, list_notes, save_note, update_title
+from backend.handlers.notes import get_note_by_code, get_note_content_for_download, list_notes, save_note, update_title
 from backend.handlers.static import serve_static
 from backend.models import NoteResponse, NotesListResponse, NoteUpdate, TitleUpdate
 
@@ -48,11 +48,11 @@ def get_app(app_settings: Settings | None = None, cors_origins: str | None = Non
         allow_headers=["*"],
     )
 
-    def get_note_endpoint(title: str) -> NoteResponse:
-        return get_note_by_title(title, app_settings.database_path)
+    def get_note_endpoint(code: str) -> NoteResponse:
+        return get_note_by_code(code, app_settings.database_path)
 
-    def save_note_endpoint(note_update: NoteUpdate) -> NoteResponse:
-        return save_note(note_update, app_settings.database_path)
+    def save_note_endpoint(code: str, note_update: NoteUpdate) -> NoteResponse:
+        return save_note(code, note_update, app_settings.database_path)
 
     def update_title_endpoint(title_update: TitleUpdate) -> NoteResponse:
         return update_title(title_update, app_settings.database_path)
@@ -60,9 +60,9 @@ def get_app(app_settings: Settings | None = None, cors_origins: str | None = Non
     def list_notes_endpoint(page: int = 1, page_size: int = 50, query: str | None = None) -> NotesListResponse:
         return list_notes(page, page_size, app_settings.database_path, query)
 
-    def download_note_endpoint(title: str) -> Response:
-        content = get_note_content_for_download(title, app_settings.database_path)
-        filename = f"{title}.md"
+    def download_note_endpoint(code: str) -> Response:
+        content = get_note_content_for_download(code, app_settings.database_path)
+        filename = f"{code}.md"
         return Response(
             content=content,
             media_type="text/markdown",
@@ -77,11 +77,11 @@ def get_app(app_settings: Settings | None = None, cors_origins: str | None = Non
         return serve_static(request, full_path, static_path)
 
     app.add_api_route("/ping", ping_endpoint, methods=["GET"])
-    app.add_api_route("/api/note", get_note_endpoint, methods=["GET"], response_model=NoteResponse)
-    app.add_api_route("/api/note", save_note_endpoint, methods=["PUT"], response_model=NoteResponse)
+    app.add_api_route("/api/note/{code}", get_note_endpoint, methods=["GET"], response_model=NoteResponse)
+    app.add_api_route("/api/note/{code}", save_note_endpoint, methods=["PUT"], response_model=NoteResponse)
     app.add_api_route("/api/note/title", update_title_endpoint, methods=["PATCH"], response_model=NoteResponse)
     app.add_api_route("/api/notes", list_notes_endpoint, methods=["GET"], response_model=NotesListResponse)
-    app.add_api_route("/api/note/download", download_note_endpoint, methods=["GET"])
+    app.add_api_route("/api/note/{code}/download", download_note_endpoint, methods=["GET"])
     app.add_api_route("/{full_path:path}", serve_static_endpoint, methods=["GET"])
 
     return app

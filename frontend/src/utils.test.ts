@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { getStringSlice, StringSlice, toggleCheckbox } from "./utils";
+import {
+  getStringSlice,
+  StringSlice,
+  toggleCheckbox,
+  generateSlug,
+} from "./utils";
 
 describe("getStringSlice", () => {
   const note = "This is a test note with some content.";
@@ -112,5 +117,87 @@ describe("toggleCheckbox", () => {
     const content = "  - [ ] indented checkbox";
     const result = toggleCheckbox(content);
     expect(result).toBe("  - [x] indented checkbox");
+  });
+});
+
+describe("generateSlug", () => {
+  it("converts simple title to lowercase slug", () => {
+    expect(generateSlug("Hello World")).toBe("hello-world");
+  });
+
+  it("converts title with special characters", () => {
+    expect(generateSlug("Hello, World!")).toBe("hello-world");
+  });
+
+  it("handles multiple spaces", () => {
+    expect(generateSlug("Hello    World")).toBe("hello-world");
+  });
+
+  it("removes leading and trailing spaces", () => {
+    expect(generateSlug("  Hello World  ")).toBe("hello-world");
+  });
+
+  it("handles consecutive dashes", () => {
+    expect(generateSlug("Hello---World")).toBe("hello-world");
+  });
+
+  it("removes leading and trailing dashes", () => {
+    expect(generateSlug("-Hello World-")).toBe("hello-world");
+  });
+
+  it("handles Unicode characters with diacritics", () => {
+    expect(generateSlug("Café")).toBe("cafe");
+    expect(generateSlug("Résumé")).toBe("resume");
+    expect(generateSlug("Naïve")).toBe("naive");
+  });
+
+  it("handles numbers", () => {
+    expect(generateSlug("Note 123")).toBe("note-123");
+    expect(generateSlug("2024 Review")).toBe("2024-review");
+  });
+
+  it("handles mixed case", () => {
+    expect(generateSlug("My Note Title")).toBe("my-note-title");
+    expect(generateSlug("MY NOTE TITLE")).toBe("my-note-title");
+  });
+
+  it("handles special symbols", () => {
+    expect(generateSlug("Note @#$%^&*()")).toBe("note");
+    expect(generateSlug("Hello-World!")).toBe("hello-world");
+    expect(generateSlug("Test/Note")).toBe("testnote");
+  });
+
+  it("handles empty string", () => {
+    expect(generateSlug("")).toBe("");
+  });
+
+  it("handles string with only special characters", () => {
+    expect(generateSlug("!@#$%")).toBe("");
+  });
+
+  it("handles string with only spaces", () => {
+    expect(generateSlug("   ")).toBe("");
+  });
+
+  it("handles title with parentheses", () => {
+    expect(generateSlug("Note (Important)")).toBe("note-important");
+  });
+
+  it("handles title with brackets", () => {
+    expect(generateSlug("Note [Draft]")).toBe("note-draft");
+  });
+
+  it("handles title with quotes", () => {
+    expect(generateSlug('Note "Draft"')).toBe("note-draft");
+  });
+
+  it("handles title with colons and semicolons", () => {
+    expect(generateSlug("Note: Important; Draft")).toBe("note-important-draft");
+  });
+
+  it("handles title with question marks and exclamation marks", () => {
+    expect(generateSlug("What is this? Important!")).toBe(
+      "what-is-this-important",
+    );
   });
 });

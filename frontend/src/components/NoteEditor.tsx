@@ -9,6 +9,7 @@ export interface NoteEditorProps {
   note: string;
   setNote: (note: string) => void;
   viewMode: ViewMode;
+  code: string;
   title: string;
 }
 
@@ -21,13 +22,18 @@ function NoteEditor(props: NoteEditorProps) {
   }
 
   useEffect(() => {
-    if (!props.title || !props.title.trim()) {
+    if (
+      !props.code ||
+      !props.code.trim() ||
+      !props.title ||
+      !props.title.trim()
+    ) {
       setSaveStatus(SaveStatus.Unsaved);
       return;
     }
 
     setSaveStatus(SaveStatus.Saving);
-    saveNote(props.title, props.note)
+    saveNote(props.code, props.title, props.note)
       .then(() => {
         setSaveStatus(SaveStatus.Saved);
       })
@@ -35,7 +41,7 @@ function NoteEditor(props: NoteEditorProps) {
         console.error("Failed to save note:", error);
         setSaveStatus(SaveStatus.Unsaved);
       });
-  }, [props.note, props.title]);
+  }, [props.note, props.code, props.title]);
 
   function getStatusIcon() {
     switch (saveStatus) {
